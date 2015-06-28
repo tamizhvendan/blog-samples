@@ -9,6 +9,7 @@ module Security =
     open Thinktecture.IdentityModel.Tokens
     open System.Security.Claims
     open System.IdentityModel.Tokens
+    open System.Text
 
     type Client = {
         ClientId : string
@@ -35,6 +36,9 @@ module Security =
     with static member Empty = {AccessToken = ""; TokenType = ""; ExpiresIn = 0.} 
 
     let private clientStorage = new Dictionary<string, Client>()
+
+    let initialize (client: Client) =
+        clientStorage.Add(client.ClientId, client)
 
     let createClient clientRequest = 
         
@@ -66,22 +70,58 @@ module Security =
                 yield (ClaimTypes.Role, "Admin")            
         } |> Seq.map (fun x -> new Claim(fst x, snd x))
 
-    let hmacSigningCredentials (key: byte[]) = new HmacSigningCredentials(key)
+    
+
+    let getSigningCredentials secret =
+        let hmacSigningCredentials (key: byte[]) = new HmacSigningCredentials(key)
+        secret |> TextEncodings.Base64Url.Decode |> hmacSigningCredentials
 
     let createToken issuer tokenRequest =
         match getClient tokenRequest.ClientId with
         | Some client ->
             if (tokenRequest.UserName = tokenRequest.Password) then
-                let signingKey = client.Base64Secret |> TextEncodings.Base64Url.Decode |> hmacSigningCredentials
+                let signingKey = getSigningCredentials client.Base64Secret
                 let issued = new Nullable<DateTime>(DateTime.UtcNow)
                 let expires = new Nullable<DateTime>(DateTime.UtcNow.AddMinutes(5.))
                 let claims = getClaims tokenRequest.UserName 
                 let token = new JwtSecurityToken(issuer, tokenRequest.ClientId, claims, issued, expires, signingKey)
-                let handler = new JwtSecurityTokenHandler()
+                let handler = new JwtSecurityTokenHandler()                
                 let accessToken = handler.WriteToken(token)
                 {AccessToken = accessToken; TokenType = "bearer"; ExpiresIn = TimeSpan.FromMinutes(5.).TotalSeconds}
 
             else Token.Empty 
             
-        | None -> Token.Empty    
+        | None -> Token.Empty
+        
+    let readToken (accessToken : string) = new JwtSecurityToken(accessToken)
+        
+            
 
+    type TokenValidationResult =
+        | Invalid of String
+        | Valid of Claim seq
+
+    let isTokenAlive (token : JwtSecurityToken) currentTime =
+        token.ValidFrom <= currentTime && token.ValidTo >= currentTime
+
+    let isValidToken (token : JwtSecurityToken) sharedKey accessToken =
+        use sha256 = new HMACSHA256()
+        sha256.Key <- sharedKey |> TextEncodings.Base64Url.Decode
+        let hash = sha256.ComputeHash(Encoding.ASCII.GetBytes(token.RawData))
+        let signature = hash |> Convert.ToBase64String 
+        // TODO - Have to fix it
+        true
+
+    let validateToken issuer sharedKey accessToken =
+        let token = readToken accessToken
+        if (token.Issuer = issuer) then
+            if isTokenAlive token DateTime.UtcNow then
+                if isValidToken token sharedKey accessToken then
+                    Valid token.Claims
+                else
+                    Invalid "Invalid Signature"                             
+            else
+                Invalid "Access Token Expired"
+        else
+            Invalid "Issuer is invalid"   
+        
