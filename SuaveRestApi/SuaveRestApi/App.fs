@@ -21,6 +21,11 @@ module App =
         http://code.tutsplus.com/tutorials/token-based-authentication-with-angularjs-nodejs--cms-22543
     *)
 
+    type AudienceDto = {
+        AudienceId : string
+        Name : string  
+    }
+
     [<EntryPoint>]
     let main argv =    
 
@@ -44,23 +49,33 @@ module App =
             IsExists = MusicStoreDb.isAlbumExists
         }            
 
-        let issuer = "Suave"
-        let localClient : Security.Client = 
-            {ClientId = "5e29eed0db0248ae9f4214cc774fb81f"; Base64Secret = "aIUgjlHv_TE08YsESkAQbkOcKNiCWE9A6hpVl6BhV6o"; Name = "Tamizh"}        
+        let issuer = "http://suaverestapi"
+        let localAudience : Security.Audience = 
+            {AudienceId = "5e29eed0db0248ae9f4214cc774fb81f"; Base64Secret = "aIUgjlHv_TE08YsESkAQbkOcKNiCWE9A6hpVl6BhV6o"; Name = "Tamizh"}        
 
         
+        let toAudienceDto (audience : Security.Audience) =
+            {AudienceId = audience.AudienceId; Name = audience.Name}  
 
-        let jwtAuthenticate (ctx : HttpContext)  =            
-            match ctx.request.header "token" with
-            | Choice1Of2 token ->                
-                Security.validateToken issuer localClient.Base64Secret token
-            | _ -> Security.TokenValidationResult.Invalid "Access Token Not Found"      
+        let jwtAuthenticate (ctx : HttpContext)  =   
+            match ctx.request.header "audienceid" with
+            |  Choice1Of2 audienceId ->    
+                match Security.getAudience audienceId with
+                | Some audience  ->    
+                    match ctx.request.header "token" with
+                    | Choice1Of2 accessToken ->                
+                        match Security.isValidToken issuer audienceId audience.Base64Secret accessToken with
+                        | Some claims -> Security.TokenValidationResult.Valid claims
+                        | None -> Security.TokenValidationResult.Invalid "Invalid Signature"
+                    | _ -> Security.TokenValidationResult.Invalid "Access Token Not Found"
+                | _ -> Security.TokenValidationResult.Invalid "Invalid Audiance Id"
+            | _ -> Security.TokenValidationResult.Invalid "Audience Id Not Found"      
 
            
         let admin webpart tokenValidationResult =
             match tokenValidationResult with
             | Security.TokenValidationResult.Valid claims -> 
-                match claims |> Seq.tryFind (fun c -> c.Type = "role" && c.Value = "Admin") with
+                match claims |> Seq.tryFind (fun c -> c.Type = ClaimTypes.Role && c.Value = "Admin") with
                 | Some _ -> webpart
                 | None -> FORBIDDEN "Invalid Request. User is not an admin" 
             | Security.TokenValidationResult.Invalid err -> FORBIDDEN err        
@@ -72,13 +87,14 @@ module App =
         let authorize f1 f2 (ctx : HttpContext) = 
             match f1 ctx with
             | Security.TokenValidationResult.Valid claims -> f2 claims 
-            | Security.TokenValidationResult.Invalid err -> FORBIDDEN err        
+            | Security.TokenValidationResult.Invalid err -> FORBIDDEN err            
+        
         
         let security =             
-            Security.initialize localClient
+            Security.initialize localAudience
             choose [
-                path "/client/add" >>= POST >>= request (RestFul.getResourceFromReq<Security.ClientRequest> >> Security.createClient >> JSON)
-                path "/client/token" >>= POST >>= request (RestFul.getResourceFromReq<Security.TokenRequest> >> Security.createToken issuer >> JSON)              
+                path "/audience/add" >>= POST >>= request (RestFul.getResourceFromReq<Security.AudienceRequest> >> Security.createAudience >> toAudienceDto >> JSON)
+                path "/audience/token" >>= POST >>= request (RestFul.getResourceFromReq<Security.TokenRequest> >> Security.issueToken issuer  >> JSON)              
             ]
              
 
