@@ -6,7 +6,7 @@ module AudienceStorage =
 
     let private audienceStorage = new Dictionary<string, Audience>()
         
-    let save audience =
+    let save (audience : Audience) =
         audienceStorage.Add(audience.AudienceId, audience)
         audience
 

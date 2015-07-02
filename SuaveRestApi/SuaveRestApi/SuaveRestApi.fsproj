@@ -60,10 +60,10 @@
     <None Include="App.config" />
     <Content Include="packages.config" />
     <Compile Include="Encodings.fs" />
-    <Compile Include="Security.fs" />
     <Compile Include="JwtToken.fs" />
     <Compile Include="AudienceStorage.fs" />
     <Compile Include="SuaveJwt.fs" />
+    <Compile Include="Security.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>
