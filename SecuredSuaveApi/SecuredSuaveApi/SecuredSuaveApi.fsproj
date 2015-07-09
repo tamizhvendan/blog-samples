@@ -71,6 +71,7 @@
     <Compile Include="Encodings.fs" />
     <Compile Include="JwtToken.fs" />
     <Compile Include="AuthorizationServer.fs" />
+    <Compile Include="ResourceServer.fs" />
     <Compile Include="AudienceStorage.fs" />
     <Compile Include="IdentityStore.fs" />
     <Compile Include="Program.fs" />

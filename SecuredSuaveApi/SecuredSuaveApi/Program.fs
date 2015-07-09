@@ -2,8 +2,10 @@
 open AuthorizationServer
 open System
 open JwtToken
-// Learn more about F# at http://fsharp.net
-// See the 'F# Tutorial' project for more help.
+open ResourceServer
+open Suave.Http
+open Suave.Http.Successful
+open Suave.Http.Applicatives
 
 [<EntryPoint>]
 let main argv = 
@@ -20,10 +22,27 @@ let main argv =
     let identityStore = {
         getClaims = IdentityStore.getClaims
         isValidCredentials = IdentityStore.isValidCredentials
-        getSecretKey = IdentityStore.getSecretKey
+        getSecurityKey = IdentityStore.getSecurityKey
         getSigningCredentials = IdentityStore.getSigningCredentials
     }
 
-    startWebServer defaultConfig (audienceWebPart authorizationServerConfig identityStore)
+    let authenticationConfig = {
+        Issuer = authorizationServerConfig.Issuer
+        getSecurityKey = IdentityStore.getSecurityKey
+        getAudience = AudienceStorage.getAudience
+    }
+
+    let audienceWebPart' = audienceWebPart authorizationServerConfig identityStore
+    let authenticate = jwtAuthenticate authenticationConfig  
+    let authorizeAdmin = jwtAuthorize IdentityStore.authorizeAdmin  
+
+    let sample1 = path "/sample1" >>= OK "Sample 1"
+    let sample2 = path "/sample2" >>=  authenticate (OK "Sample 2")
+    let sample3 = path "/sample3" >>= authenticate (authorizeAdmin (OK "Sample 3"))
+    
+
+    let app = choose [audienceWebPart';sample1;sample2;sample3]
+
+    startWebServer defaultConfig app
 
     0 // return an integer exit code
