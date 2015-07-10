@@ -5,14 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>526986ab-6b6a-4682-8562-54353efb7b51</ProjectGuid>
+    <ProjectGuid>a0ef354f-42cb-46e3-b5d1-41d70dc4c4a1</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SecuredSuaveApi</RootNamespace>
-    <AssemblyName>SecuredSuaveApi</AssemblyName>
+    <RootNamespace>Audience1</RootNamespace>
+    <AssemblyName>Audience1</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
-    <Name>SecuredSuaveApi</Name>
+    <Name>Audience1</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\SecuredSuaveApi.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Audience1.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -34,7 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\SecuredSuaveApi.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Audience1.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
@@ -47,10 +47,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Suave">
       <HintPath>..\packages\Suave.0.30.0\lib\net40\Suave.dll</HintPath>
       <Private>True</Private>
@@ -58,25 +54,21 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.2.206221351\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SuaveJson.fs" />
-    <Compile Include="Encodings.fs" />
-    <Compile Include="JwtToken.fs" />
-    <Compile Include="AuthorizationServer.fs" />
-    <Compile Include="ResourceServer.fs" />
-    <Compile Include="AudienceStorage.fs" />
-    <Compile Include="IdentityStore.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SuaveJwt\SuaveJwt.fsproj">
+      <Name>SuaveJwt</Name>
+      <Project>{2ffa5dc5-6279-4af4-ac36-3cefcec7bd0a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

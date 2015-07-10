@@ -1,16 +1,8 @@
-﻿module IdentityStore
-    
-open Encodings
-open System.IdentityModel.Tokens
-open System.Security.Claims      
-open ResourceServer
-       
-let getSecurityKey sharedKey : SecurityKey =
-    let symmetricKey = sharedKey |> Base64String.decode
-    new InMemorySymmetricSecurityKey(symmetricKey) :> SecurityKey
+﻿module IdentityStore    
 
-let getSigningCredentials secretKey =
-    new SigningCredentials(secretKey,SecurityAlgorithms.HmacSha256Signature, SecurityAlgorithms.Sha256Digest)
+open System.Security.Claims      
+open Secure      
+
 
 let getClaims userName =
     seq {

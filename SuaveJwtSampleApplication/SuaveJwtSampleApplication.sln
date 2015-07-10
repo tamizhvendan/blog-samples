@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SuaveJwt.AuthServerHost", "SuaveJwt.AuthServerHost\SuaveJwt.AuthServerHost.fsproj", "{526986AB-6B6A-4682-8562-54353EFB7B51}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Audience1", "Audience1\Audience1.fsproj", "{A0EF354F-42CB-46E3-B5D1-41D70DC4C4A1}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SuaveJwt", "SuaveJwt\SuaveJwt.fsproj", "{2FFA5DC5-6279-4AF4-AC36-3CEFCEC7BD0A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{526986AB-6B6A-4682-8562-54353EFB7B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{526986AB-6B6A-4682-8562-54353EFB7B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{526986AB-6B6A-4682-8562-54353EFB7B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{526986AB-6B6A-4682-8562-54353EFB7B51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0EF354F-42CB-46E3-B5D1-41D70DC4C4A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0EF354F-42CB-46E3-B5D1-41D70DC4C4A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0EF354F-42CB-46E3-B5D1-41D70DC4C4A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0EF354F-42CB-46E3-B5D1-41D70DC4C4A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FFA5DC5-6279-4AF4-AC36-3CEFCEC7BD0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FFA5DC5-6279-4AF4-AC36-3CEFCEC7BD0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FFA5DC5-6279-4AF4-AC36-3CEFCEC7BD0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FFA5DC5-6279-4AF4-AC36-3CEFCEC7BD0A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

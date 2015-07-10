@@ -1,12 +1,12 @@
-﻿module AuthorizationServer
+﻿module AuthServer
 
 open Suave.Http
 open Suave.Http.Applicatives
 open Suave.Types
-open SuaveJson
 open Suave.Http.RequestErrors
 open JwtToken
 open System
+open SuaveJson
 
 type AudienceCreateRequest = {
     Name : string
@@ -18,7 +18,7 @@ type AudienceCreateResponse = {
     Name : string
 }
 
-type TokenCreateRequest = {
+type TokenCreateCredentials = {
     UserName : string
     Password : string
     ClientId : string
@@ -27,7 +27,7 @@ type TokenCreateRequest = {
 type Config = {
     AddAudienceUrlPath : string
     CreateTokenUrlPath : string
-    SaveAudience : Audience -> Async<Audience>
+    CreateAudience : string -> Async<Audience>
     GetAudience : string -> Async<Audience option>
     Issuer : string
     TokenTimeSpan : TimeSpan
@@ -45,27 +45,27 @@ let audienceWebPart config identityStore =
         match mapJsonPayload<AudienceCreateRequest> ctx.request with
         | Some audienceCreateRequest -> 
             async {
-                let! audience = audienceCreateRequest.Name |> createAudience |> config.SaveAudience                     
+                let! audience = audienceCreateRequest.Name |> config.CreateAudience                     
                 let audienceCreateResponse = toAudienceCreateResponse audience
                 return! JSON audienceCreateResponse ctx
             }
         | None -> BAD_REQUEST "Invalid Audience Create Request" ctx
 
     let tryCreateToken (ctx: HttpContext) =
-        match mapJsonPayload<TokenCreateRequest> ctx.request with
-        | Some tokenCreateRequest -> 
+        match mapJsonPayload<TokenCreateCredentials> ctx.request with
+        | Some tokenCreateCredentials -> 
             async {
-                let! audience = config.GetAudience tokenCreateRequest.ClientId
+                let! audience = config.GetAudience tokenCreateCredentials.ClientId
                 match audience with
                 | Some audience ->
-                    let tokenCreateRequest' = {         
+                    let tokenCreateRequest : TokenCreateRequest = {         
                         Issuer = config.Issuer        
-                        UserName = tokenCreateRequest.UserName
-                        Password = tokenCreateRequest.Password        
+                        UserName = tokenCreateCredentials.UserName
+                        Password = tokenCreateCredentials.Password        
                         TokenTimeSpan = config.TokenTimeSpan
                     }
                     
-                    let! token = createToken tokenCreateRequest' identityStore audience
+                    let! token = createToken tokenCreateRequest identityStore audience
                     match token with
                     | Some token -> return! JSON token ctx
                     | None -> return! BAD_REQUEST "Invalid Login Credentials" ctx

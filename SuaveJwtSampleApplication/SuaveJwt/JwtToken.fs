@@ -2,15 +2,8 @@
 
 open Encodings
 open System
-open System.Security.Cryptography
 open System.Security.Claims
 open System.IdentityModel.Tokens
-
-type Audience = {
-    ClientId : string
-    Secret : Base64String
-    Name : string
-}
 
 type TokenCreateRequest = {         
     Issuer : string        
@@ -31,13 +24,13 @@ type Token = {
     ExpiresIn : float        
 } 
 
-let createAudience audienceName =          
-    let clientId = Guid.NewGuid().ToString("N")
-    let data = Array.zeroCreate 32
-    RNGCryptoServiceProvider.Create().GetBytes(data)
-    let secret = data |> Base64String.create 
-    {ClientId = clientId; Secret = secret; Name =  audienceName} 
-    
+
+type Audience = {
+    ClientId : string
+    Secret : Base64String
+    Name : string
+}
+
     
 let createToken tokenCreateRequest identityStore audience = 
     async {
@@ -50,7 +43,7 @@ let createToken tokenCreateRequest identityStore audience =
             let! claims =  identityStore.getClaims tokenCreateRequest.UserName 
             let jwtSecurityToken = 
                 new JwtSecurityToken(tokenCreateRequest.Issuer, audience.ClientId, claims, issuedOn, expiresBy, signingCredentials)
-            let handler = new JwtSecurityTokenHandler()  
+            let handler = new JwtSecurityTokenHandler()
             let accessToken = handler.WriteToken(jwtSecurityToken)                
             return Some {AccessToken = accessToken; ExpiresIn = tokenCreateRequest.TokenTimeSpan.TotalSeconds}
         else return None 
@@ -59,19 +52,19 @@ let createToken tokenCreateRequest identityStore audience =
 
 type TokenValidationRequest = {
     Issuer : string
-    Secret : Base64String
+    SecurityKey : SecurityKey
     ClientId : string
     AccessToken : string
 }
 
-let validate tokenValidationRequest getSecurityKey = 
+let validate tokenValidationRequest = 
     let tokenValidationParameters =
         let validationParams = new TokenValidationParameters()
         validationParams.ValidAudience <- tokenValidationRequest.ClientId
         validationParams.ValidIssuer <- tokenValidationRequest.Issuer
         validationParams.ValidateLifetime <- true
         validationParams.ValidateIssuerSigningKey <- true
-        validationParams.IssuerSigningKey <-  getSecurityKey tokenValidationRequest.Secret
+        validationParams.IssuerSigningKey <-  tokenValidationRequest.SecurityKey
         validationParams    
     
     try 

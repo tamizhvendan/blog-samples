@@ -19,6 +19,9 @@ type Base64String = private Base64String of string with
             .Replace('+', '-')
             .Replace('/', '_') |> Base64String;
 
+         
+    static member fromString = Base64String
+
     override this.ToString() = 
         let (Base64String str) = this
         str
