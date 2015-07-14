@@ -29,7 +29,7 @@ let main argv =
 
     let audienceWebPart' = audienceWebPart authorizationServerConfig identityStore
     //let authenticate = jwtAuthenticate authenticationConfig  
-    let authorizeAdmin = jwtAuthorize IdentityStore.authorizeAdmin  
+    // let authorizeAdmin = jwtAuthorize IdentityStore.authorizeAdmin  
 
     let sample1 = path "/sample1" >>= OK "Sample 1" 
     
