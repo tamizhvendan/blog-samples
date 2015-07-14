@@ -20,9 +20,9 @@ let main argv =
         | Some _ -> Authorized |> async.Return
         | None -> UnAuthorized "User is not a Super User" |> async.Return
 
-    let authenticate = jwtAuthenticate authenticationConfig
+    let authorize = jwtAuthorize authenticationConfig
     let sample1 = path "/audience2/sample1" >>= OK "Sample 1"
-    let sample2 = path "/audience2/sample2" >>= authenticate (jwtAuthorize authorizeSuperUser (OK "Sample 2"))      
+    let sample2 = path "/audience2/sample2" >>= authorize authorizeSuperUser (OK "Sample 2")      
     let config = { defaultConfig with bindings = [HttpBinding.mk' HTTP "127.0.0.1" 8085] }    
     let app = choose [sample1;sample2]
 

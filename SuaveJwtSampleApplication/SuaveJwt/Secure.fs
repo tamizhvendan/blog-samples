@@ -40,7 +40,7 @@ let jwtAuthenticate authConfig webpart (ctx: HttpContext) =
 
 
 
-let jwtAuthorize authorizeUser webpart (ctx: HttpContext) =
+let jwtAuthorize authConfig authorizeUser webpart  = 
 
     let getClaims (ctx: HttpContext) =
         let userState = ctx.userState
@@ -51,12 +51,17 @@ let jwtAuthorize authorizeUser webpart (ctx: HttpContext) =
         else
             None
 
-    match getClaims ctx with
-    | Some claims ->
-         async {
-            let! authorizationResult = authorizeUser claims          
-            match authorizationResult with
-            | Authorized -> return! webpart ctx
-            | UnAuthorized err -> return! FORBIDDEN err ctx
-        }
-    | None -> FORBIDDEN "Claims not found" ctx
+    let authorize httpContext =
+        match getClaims httpContext with
+        | Some claims ->
+                async {
+                let! authorizationResult = authorizeUser claims          
+                match authorizationResult with
+                | Authorized -> return! webpart httpContext
+                | UnAuthorized err -> return! FORBIDDEN err httpContext
+            }
+        | None -> FORBIDDEN "Claims not found" httpContext
+        
+    
+         
+    jwtAuthenticate authConfig authorize

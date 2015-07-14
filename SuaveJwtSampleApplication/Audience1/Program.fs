@@ -23,7 +23,7 @@ let main argv =
 
     let authenticate = jwtAuthenticate authenticationConfig
     let sample1 = path "/audience1/sample1" >>= authenticate (OK "Sample 1")  
-    let sample2 = path "/audience1/sample2" >>= authenticate (jwtAuthorize authorizeAdmin (OK "Sample 2"))      
+    let sample2 = path "/audience1/sample2" >>= jwtAuthorize authenticationConfig authorizeAdmin (OK "Sample 2")      
     let config = { defaultConfig with bindings = [HttpBinding.mk' HTTP "127.0.0.1" 8084] }    
     let app = choose [sample1;sample2]
 
