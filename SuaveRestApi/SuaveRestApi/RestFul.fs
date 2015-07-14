@@ -42,7 +42,7 @@ module RestFul =
        
         let resourcePath = "/" + resourceName
         let resourceIdPath = new PrintfFormat<(int -> string),unit,string,string,int>(resourcePath + "/%d")
-        let resourceCountPath = resourcePath + "/count"
+        
         let badRequest = BAD_REQUEST "Resource not found"
 
         let handleResource requestError = function

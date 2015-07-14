@@ -1,33 +1,16 @@
 ﻿namespace SuaveRestApi
 
 module App =   
-    open SuaveRestApi.Rest
-    open Suave.Http.RequestErrors
-    open Suave.Http
-    open Suave.Http.Applicatives
-    open Suave.Types
-    open Suave.Web
-    open SuaveJwt    
-    open JwtToken
+    open SuaveRestApi.Rest    
+    open Suave.Http    
+    open Suave.Web   
     open SuaveRestApi.Db
     open SuaveRestApi.MusicStoreDb
-    open Suave.Http.Successful
-    open System
 
     type AudienceDto = {
         AudienceId : string
         Name : string  
-    }
-
-    type TokenRequestDto = {
-        UserName : string
-        Password : string
-        AudienceId : string
-    }
-
-     type AudienceRequestDto = {
-        Name : string
-    } 
+    }    
 
     [<EntryPoint>]
     let main argv =    
@@ -52,48 +35,11 @@ module App =
             IsExists = MusicStoreDb.isAlbumExists
         }       
 
-        let issuer = "http://localhost:8083/suaverestapi"               
-        let toAudienceDto (audience : Audience) : AudienceDto =
-            {AudienceId = audience.AudienceId; Name = audience.Name}               
+       
+        let app = choose[personWebPart;albumWebPart]                    
 
-        let jwtCreateAudience audienceRequestDto = SuaveJwt.createAudiance AudienceStorage.save audienceRequestDto.Name
-
-        let identityStore = {
-            getClaims = Security.getClaims
-            isValidCredentials = Security.isValidCredentials
-            getSecretKey = Security.getSecretKey
-            getSigningCredentials = Security.getSigningCredentials
-            getAudience = AudienceStorage.getAudience
-        }
-                
-        let jwtIssueToken tokenRequest = 
-
-            let tokenRequest =  {                
-                Issuer = issuer                
-                UserName = tokenRequest.UserName
-                Password = tokenRequest.Password                    
-                TokenTimeSpan = TimeSpan.FromMinutes(5.)
-                AudienceId = tokenRequest.AudienceId
-            }
-
-            SuaveJwt.issueToken identityStore tokenRequest
-
-        let jwtAuthenticate = SuaveJwt.authenticate issuer identityStore
-
-        let jwtAuthorize = SuaveJwt.authorize Security.authorizeAdmin 
-
-        let audienceWebPart =
+        startWebServer defaultConfig app
             
-            choose [
-                path "/audience/add" >>= POST >>= request (RestFul.getResourceFromReq<AudienceRequestDto> >> jwtCreateAudience  >> toAudienceDto >> JSON)
-                path "/audience/token" 
-                    >>= POST 
-                    >>= request (RestFul.getResourceFromReq<TokenRequestDto> >> jwtIssueToken) 
-            ]            
-        
-              
-
-        startWebServer defaultConfig (choose [personWebPart;audienceWebPart;jwtAuthenticate (jwtAuthorize albumWebPart)])
         0
 
         
