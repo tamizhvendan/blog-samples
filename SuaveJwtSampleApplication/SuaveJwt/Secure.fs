@@ -11,13 +11,13 @@ type AuthorizationResult =
     | UnAuthorized of string
 
 
-type AuthenticationConfig = {
+type JwtConfig = {
     Issuer : string    
     SecurityKey : SecurityKey
     ClientId : string    
 }
 
-let jwtAuthenticate authConfig webpart (ctx: HttpContext) = 
+let jwtAuthenticate jwtConfig webpart (ctx: HttpContext) = 
 
     let updateContextWithClaims claims =
         { ctx with userState = ctx.userState.Remove("Claims").Add("Claims", claims) }    
@@ -26,9 +26,9 @@ let jwtAuthenticate authConfig webpart (ctx: HttpContext) =
     | Choice1Of2 accessToken ->                     
          
         let tokenValidationRequest =  {
-            Issuer = authConfig.Issuer
-            SecurityKey = authConfig.SecurityKey
-            ClientId = authConfig.ClientId
+            Issuer = jwtConfig.Issuer
+            SecurityKey = jwtConfig.SecurityKey
+            ClientId = jwtConfig.ClientId
             AccessToken = accessToken
         }
         let validationResult = validate tokenValidationRequest 
@@ -54,7 +54,7 @@ let jwtAuthorize authConfig authorizeUser webpart  =
     let authorize httpContext =
         match getClaims httpContext with
         | Some claims ->
-                async {
+            async {
                 let! authorizationResult = authorizeUser claims          
                 match authorizationResult with
                 | Authorized -> return! webpart httpContext
