@@ -36,11 +36,11 @@ let jwtAuthenticate jwtConfig webpart (ctx: HttpContext) =
         | Choice1Of2 claims -> webpart (updateContextWithClaims claims)
         | Choice2Of2 err -> FORBIDDEN err ctx                         
         
-    | _ -> FORBIDDEN "Invalid Request. Provide both clientid and token" ctx   
+    | _ -> BAD_REQUEST "Invalid Request. Request header doesn't contain token" ctx   
 
 
 
-let jwtAuthorize authConfig authorizeUser webpart  = 
+let jwtAuthorize jwtConfig authorizeUser webpart  = 
 
     let getClaims (ctx: HttpContext) =
         let userState = ctx.userState
@@ -64,4 +64,4 @@ let jwtAuthorize authConfig authorizeUser webpart  =
         
     
          
-    jwtAuthenticate authConfig authorize
+    jwtAuthenticate jwtConfig authorize
