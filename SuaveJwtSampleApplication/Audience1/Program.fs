@@ -12,8 +12,8 @@ let main argv =
     
     let jwtConfig = {
         Issuer = "http://localhost:8083/suave"
-        ClientId = "ad4c3c9c9367442a9f30bfb69edb2113"
-        SecurityKey = KeyStore.securityKey (Base64String.fromString "bJ3RXpHDoOSmToBeZCwe8V6Gyw-wA4QhyJlMETQR6u4")       
+        ClientId = "7ff79ba3305c4e4f9d0ececeae70c78f"
+        SecurityKey = KeyStore.securityKey (Base64String.fromString "Op5EqjC70aLS2dx3gI0zADPIZGX2As6UEwjA4oyBjMo")       
     }
 
     let authorizeAdmin (claims : Claim seq) =

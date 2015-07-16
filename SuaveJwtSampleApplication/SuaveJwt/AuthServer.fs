@@ -27,7 +27,7 @@ type TokenCreateCredentials = {
 type Config = {
     AddAudienceUrlPath : string
     CreateTokenUrlPath : string
-    CreateAudience : string -> Async<Audience>
+    SaveAudience : Audience -> Async<Audience>
     GetAudience : string -> Async<Audience option>
     Issuer : string
     TokenTimeSpan : TimeSpan
@@ -45,7 +45,7 @@ let audienceWebPart config identityStore =
         match mapJsonPayload<AudienceCreateRequest> ctx.request with
         | Some audienceCreateRequest -> 
             async {
-                let! audience = audienceCreateRequest.Name |> config.CreateAudience                     
+                let! audience = audienceCreateRequest.Name |> createAudience |> config.SaveAudience                     
                 let audienceCreateResponse = toAudienceCreateResponse audience
                 return! JSON audienceCreateResponse ctx
             }

@@ -14,7 +14,7 @@ let main argv =
     let authorizationServerConfig = {
         AddAudienceUrlPath = "/api/audience"
         CreateTokenUrlPath = "/oauth2/token"
-        CreateAudience = AudienceStorage.createAudience
+        SaveAudience = AudienceStorage.saveAudience
         GetAudience = AudienceStorage.getAudience
         Issuer = "http://localhost:8083/suave"
         TokenTimeSpan = TimeSpan.FromMinutes(1.)
@@ -27,15 +27,8 @@ let main argv =
         getSigningCredentials = KeyStore.hmacSha256
     }    
 
-    let audienceWebPart' = audienceWebPart authorizationServerConfig identityStore
-    //let authenticate = jwtAuthenticate authenticationConfig  
-    // let authorizeAdmin = jwtAuthorize IdentityStore.authorizeAdmin  
+    let audienceWebPart' = audienceWebPart authorizationServerConfig identityStore   
 
-    let sample1 = path "/sample1" >>= OK "Sample 1" 
-    
-
-    let app = choose [audienceWebPart';sample1;]
-
-    startWebServer defaultConfig app
+    startWebServer defaultConfig audienceWebPart'
 
     0 // return an integer exit code
