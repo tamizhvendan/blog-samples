@@ -13,8 +13,8 @@ let main argv =
         |> OK >>= Writers.setMimeType "application/json"      
     
     let user = pathScan "/users/%s" (fun _ -> "User.json" |> json)  
-    let repos = pathScan "/user/%s/repos" (fun _ -> "Repos.json" |> json)
-    let mockApi = choose [user;repos]
+    let repos = pathScan "/users/%s/repos" (fun _ -> "Repos.json" |> json)
+    let mockApi = choose [repos;user]
 
     startWebServer defaultConfig mockApi          
     0 
