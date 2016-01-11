@@ -3,10 +3,13 @@
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
 open Suave.Http
-open Suave.Http.Successful
-open Suave.Types
+
 open Profile
-open Suave.Http.RequestErrors
+open Suave.Successful
+open Suave
+open Suave.Operators
+open Suave.RequestErrors
+
 
 let JSON v =  
     let jsonSerializerSettings = new JsonSerializerSettings()
@@ -14,7 +17,7 @@ let JSON v =
     
     JsonConvert.SerializeObject(v, jsonSerializerSettings)
     |> OK 
-    >>= Writers.setMimeType "application/json; charset=utf-8"
+    >=> Writers.setMimeType "application/json; charset=utf-8"
 
 let getProfile userName (httpContext : HttpContext) =
      async {

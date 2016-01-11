@@ -1,7 +1,5 @@
 ﻿open Suave
-open Suave.Http
-open Suave.Http.Applicatives
-open Suave.Web
+open Suave.Filters
 
 [<EntryPoint>]
 let main argv = 
