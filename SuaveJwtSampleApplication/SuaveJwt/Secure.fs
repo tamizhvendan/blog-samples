@@ -1,10 +1,12 @@
 ﻿module Secure
 
-open Suave.Types
+
 open System.Security.Claims
-open Suave.Http.RequestErrors
+
 open System.IdentityModel.Tokens
 open JwtToken
+open Suave
+open Suave.RequestErrors
 
 type AuthorizationResult =
     | Authorized

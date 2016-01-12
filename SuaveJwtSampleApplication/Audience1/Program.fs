@@ -1,11 +1,13 @@
-﻿open Suave.Http.Successful
-open Suave.Http.Applicatives
+﻿open Suave
 open Suave.Http
 open Suave.Web
-open Suave.Types
+
 open Secure
 open Encodings
 open System.Security.Claims
+open Suave.Successful
+open Suave.Filters
+open Suave.Operators
 
 [<EntryPoint>]
 let main argv = 
@@ -21,9 +23,9 @@ let main argv =
         | Some _ -> Authorized |> async.Return
         | None -> UnAuthorized "User is not an admin" |> async.Return
     
-    let sample1 = path "/audience1/sample1" >>= jwtAuthenticate jwtConfig (OK "Sample 1")  
-    let sample2 = path "/audience1/sample2" >>= jwtAuthorize jwtConfig authorizeAdmin (OK "Sample 2")      
-    let config = { defaultConfig with bindings = [HttpBinding.mk' HTTP "127.0.0.1" 8084] }    
+    let sample1 = path "/audience1/sample1" >=> jwtAuthenticate jwtConfig (OK "Sample 1")  
+    let sample2 = path "/audience1/sample2" >=> jwtAuthorize jwtConfig authorizeAdmin (OK "Sample 2")      
+    let config = { defaultConfig with bindings = [HttpBinding.mkSimple HTTP "127.0.0.1" 8084] }    
     let app = choose [sample1;sample2]
 
     startWebServer config app

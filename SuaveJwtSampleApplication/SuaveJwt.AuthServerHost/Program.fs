@@ -4,8 +4,6 @@ open JwtToken
 open Secure
 open System
 open Suave.Http
-open Suave.Http.Successful
-open Suave.Http.Applicatives
 open Encodings
 
 [<EntryPoint>]

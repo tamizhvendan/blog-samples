@@ -2,9 +2,12 @@
 
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
-open Suave.Http.Successful
+
 open Suave.Http
-open Suave.Types
+open Suave.Successful
+open Suave.Operators
+open Suave
+
 
 let JSON v =     
     let jsonSerializerSettings = new JsonSerializerSettings()
@@ -12,7 +15,7 @@ let JSON v =
     
     JsonConvert.SerializeObject(v, jsonSerializerSettings)
     |> OK 
-    >>= Writers.setMimeType "application/json; charset=utf-8"
+    >=> Writers.setMimeType "application/json; charset=utf-8"
 
 let mapJsonPayload<'a> (req : HttpRequest) = 
     

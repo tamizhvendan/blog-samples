@@ -1,12 +1,13 @@
 ﻿module AuthServer
 
 open Suave.Http
-open Suave.Http.Applicatives
-open Suave.Types
-open Suave.Http.RequestErrors
 open JwtToken
 open System
 open SuaveJson
+open Suave.RequestErrors
+open Suave
+open Suave.Filters
+open Suave.Operators
 
 type AudienceCreateRequest = {
     Name : string
@@ -76,6 +77,6 @@ let audienceWebPart config identityStore =
         | None -> BAD_REQUEST "Invalid Token Create Request" ctx
 
     choose [
-        path config.AddAudienceUrlPath >>= POST >>= tryCreateAudience
-        path config.CreateTokenUrlPath >>= POST >>= tryCreateToken
+        path config.AddAudienceUrlPath >=> POST >=> tryCreateAudience
+        path config.CreateTokenUrlPath >=> POST >=> tryCreateToken
     ]
