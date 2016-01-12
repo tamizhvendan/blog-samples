@@ -1,11 +1,11 @@
 ﻿namespace SuaveRestApi
 
 module App =   
-    open SuaveRestApi.Rest    
-    open Suave.Http    
-    open Suave.Web   
+    open Suave.Web
+    open SuaveRestApi.Rest
     open SuaveRestApi.Db
     open SuaveRestApi.MusicStoreDb
+    open Suave
 
     type AudienceDto = {
         AudienceId : string

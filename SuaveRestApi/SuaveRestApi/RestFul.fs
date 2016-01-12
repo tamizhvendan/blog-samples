@@ -2,15 +2,17 @@
 
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
+open Suave
+open Suave.Operators
 open Suave.Http
-open Suave.Http.Successful
-open Suave.Http.Applicatives
-open Suave.Types
-open Suave.Http.RequestErrors
+open Suave.Successful
 
 
 [<AutoOpen>]
 module RestFul =    
+    open Suave.RequestErrors
+    open Suave.Filters
+    
 
     // 'a -> WebPart
     let JSON v =     
@@ -19,7 +21,7 @@ module RestFul =
     
         JsonConvert.SerializeObject(v, jsonSerializerSettings)
         |> OK 
-        >>= Writers.setMimeType "application/json; charset=utf-8"
+        >=> Writers.setMimeType "application/json; charset=utf-8"
 
     let fromJson<'a> json =
         JsonConvert.DeserializeObject(json, typeof<'a>) :?> 'a    
@@ -63,13 +65,13 @@ module RestFul =
             if resource.IsExists id then OK "" else NOT_FOUND ""
 
         choose [
-            path resourcePath >>= choose [
-                GET >>= getAll
-                POST >>= request (getResourceFromReq >> resource.Create >> JSON)
-                PUT >>= request (getResourceFromReq >> resource.Update >> handleResource badRequest)
+            path resourcePath >=> choose [
+                GET >=> getAll
+                POST >=> request (getResourceFromReq >> resource.Create >> JSON)
+                PUT >=> request (getResourceFromReq >> resource.Update >> handleResource badRequest)
             ]
-            DELETE >>= pathScan resourceIdPath deleteResourceById
-            GET >>= pathScan resourceIdPath getResourceById
-            PUT >>= pathScan resourceIdPath updateResourceById
-            HEAD >>= pathScan resourceIdPath isResourceExists
+            DELETE >=> pathScan resourceIdPath deleteResourceById
+            GET >=> pathScan resourceIdPath getResourceById
+            PUT >=> pathScan resourceIdPath updateResourceById
+            HEAD >=> pathScan resourceIdPath isResourceExists
         ]

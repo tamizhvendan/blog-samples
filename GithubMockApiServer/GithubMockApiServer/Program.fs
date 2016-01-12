@@ -1,9 +1,8 @@
-﻿open System.IO
-open Suave.Http
-open Suave
+﻿open Suave
 open Suave.Operators
 open Suave.Successful
 open Suave.Filters
+open System.IO
 
 [<EntryPoint>]
 let main argv = 
