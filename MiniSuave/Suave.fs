@@ -29,6 +29,25 @@ module Succuessful =
     |> Some
     |> async.Return
 
+  let Empty context = Option<'a>.None |> async.Return
+
+
+module Combinators =
+
+  let bind f asyncX = async {
+    let! x = asyncX
+    match x with
+    | None -> return None
+    | Some y ->
+      let z = f y
+      return! z
+  }
+
+  let compose first second x =
+    bind second (first x)
+
+  let (>=>) first second =
+    compose first second
 
 module Console =
   open Http
