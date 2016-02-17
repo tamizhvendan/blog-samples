@@ -44,3 +44,27 @@ module Console =
       | None ->
         printfn "No Output"
     } |> Async.RunSynchronously
+
+  let parseRequest (input : System.String) =
+    let parts = input.Split([|';'|])
+    let rawType = parts.[0]
+    let route = parts.[1]
+    match rawType with
+    | "GET" -> {Type = GET; Route = route}
+    | "POST" -> {Type = POST; Route = route}
+    | _ -> failwith "invalid request"
+
+  let executeInLoop inputContext webpart =
+    let mutable continueLooping = true
+    while continueLooping do
+      printf "Enter Input Route : "
+      let input = System.Console.ReadLine()
+      try
+        if input = "exit" then
+          continueLooping <- false
+        else
+          let context = {inputContext with Request = parseRequest input}
+          execute context webpart
+      with
+        | ex ->
+          printfn "Error : %s" ex.Message

@@ -8,5 +8,5 @@ let main argv =
     let request = {Route = "/foo/bar"; Type = GET}
     let response = {Output = ""; Code = ""}
     let context = {Request = request; Response = response}
-    execute context (OK "Hello Suave!")
+    executeInLoop context (OK "Hello Suave!")
     0
