@@ -51,16 +51,16 @@ module Combinators =
 
 module Filters =
   open Http
-  let GET context =
-    if context.Request.Type = GET then
+
+  let filterRequest requestType context =
+    if context.Request.Type = requestType then
       context |> Some |> async.Return
     else
       None |> async.Return
-  let POST context =
-    if context.Request.Type = POST then
-      context |> Some |> async.Return
-    else
-      None |> async.Return
+
+  let GET = filterRequest GET
+  let POST = filterRequest POST
+
 
 module Console =
   open Http

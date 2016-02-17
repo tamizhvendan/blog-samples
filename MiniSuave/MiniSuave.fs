@@ -10,5 +10,5 @@ let main argv =
     let request = {Route = "/foo/bar"; Type = Suave.Http.GET}
     let response = {Output = ""; Code = ""}
     let context = {Request = request; Response = response}
-    executeInLoop context (POST >=> OK "Hello, World!")
+    executeInLoop context (GET >=> OK "Hello, World!")
     0
