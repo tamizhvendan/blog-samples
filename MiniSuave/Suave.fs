@@ -56,6 +56,11 @@ module Filters =
       context |> Some |> async.Return
     else
       None |> async.Return
+  let POST context =
+    if context.Request.Type = POST then
+      context |> Some |> async.Return
+    else
+      None |> async.Return
 
 module Console =
   open Http
