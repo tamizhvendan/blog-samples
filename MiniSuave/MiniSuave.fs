@@ -7,8 +7,18 @@ open Suave.Filters
 
 [<EntryPoint>]
 let main argv =
-    let request = {Route = "/foo/bar"; Type = Suave.Http.GET}
+    let request = {Route = ""; Type = Suave.Http.GET}
     let response = {Output = ""; Code = ""}
     let context = {Request = request; Response = response}
-    executeInLoop context (GET >=> Path "/hello" >=> OK "Hello, World!")
+
+    let app = Choose [
+                GET >=> Path "/hello" >=> OK "Hello GET"
+                POST >=> Path "/hello" >=> OK "Hello POST"
+                Path "/foo" >=> Choose [
+                                  GET >=> OK "Foo GET"
+                                  POST >=> OK "Foo Post"
+                                ]
+              ]
+
+    executeInLoop context app
     0

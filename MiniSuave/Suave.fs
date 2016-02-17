@@ -49,6 +49,16 @@ module Combinators =
   let (>=>) first second =
     compose first second
 
+  let rec Choose webparts context = async {
+    match webparts with
+    | [] -> return None
+    | x :: xs ->
+      let! result = x context
+      match result with
+      | Some x -> return Some x
+      | None -> return! Choose xs context
+  }
+
 module Filters =
   open Http
 
