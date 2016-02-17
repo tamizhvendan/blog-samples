@@ -61,6 +61,12 @@ module Filters =
   let GET = filterRequest GET
   let POST = filterRequest POST
 
+  let Path path context =
+    if context.Request.Route = path then
+      context |> Some |> async.Return
+    else
+      None |> async.Return
+
 
 module Console =
   open Http
