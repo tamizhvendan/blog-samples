@@ -49,6 +49,14 @@ module Combinators =
   let (>=>) first second =
     compose first second
 
+module Filters =
+  open Http
+  let GET context =
+    if context.Request.Type = GET then
+      context |> Some |> async.Return
+    else
+      None |> async.Return
+
 module Console =
   open Http
   let execute inputContext webpart =
