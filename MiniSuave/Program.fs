@@ -16,7 +16,7 @@ let main argv =
                 POST >=> Path "/hello" >=> OK "Hello POST"
                 Path "/foo" >=> Choose [
                                   GET >=> OK "Foo GET"
-                                  POST >=> OK "Foo Post"
+                                  POST >=> OK "Foo POST"
                                 ]
               ]
 

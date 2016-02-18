@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Suave.fs" />
-    <Compile Include="MiniSuave.fs" />
+    <Compile Include="Program.fs" />
     <None Include="App.config" />
   </ItemGroup>
   <PropertyGroup>
