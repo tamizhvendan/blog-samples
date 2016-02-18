@@ -8,7 +8,7 @@ open Suave.Filters
 [<EntryPoint>]
 let main argv =
     let request = {Route = ""; Type = Suave.Http.GET}
-    let response = {Content = ""; Code = ""}
+    let response = {Content = ""; StatusCode = 200}
     let context = {Request = request; Response = response}
 
     let app = Choose [

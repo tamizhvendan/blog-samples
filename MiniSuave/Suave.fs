@@ -11,7 +11,7 @@ module Http =
 
   type Response = {
     Content : string
-    Code : string
+    StatusCode : int
   }
 
   type Context = {
@@ -25,7 +25,7 @@ module Succuessful =
   open Http
 
   let OK s context =
-    {context with Response = {Content = s; Code = "200"}}
+    {context with Response = {Content = s; StatusCode = 200}}
     |> Some
     |> async.Return
 
@@ -82,7 +82,7 @@ module Console =
       match outputContext with
       | Some context ->
         printfn "--------------"
-        printfn "Code : %s" context.Response.Code
+        printfn "Code : %d" context.Response.StatusCode
         printfn "Output : %s" context.Response.Content
         printfn "--------------"
       | None ->
