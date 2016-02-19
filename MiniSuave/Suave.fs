@@ -24,12 +24,10 @@ module Http =
 module Succuessful =
   open Http
 
-  let OK s context =
-    {context with Response = {Content = s; StatusCode = 200}}
+  let OK content context =
+    {context with Response = {Content = content; StatusCode = 200}}
     |> Some
     |> async.Return
-
-  let Empty context = Option<'a>.None |> async.Return
 
 
 module Combinators =
