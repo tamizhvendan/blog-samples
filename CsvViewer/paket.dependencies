@@ -1,0 +1,5 @@
+source https://www.nuget.org/api/v2
+nuget FParsec
+nuget Suave
+nuget FSharp.Data
+nuget NewtonSoft.Json
