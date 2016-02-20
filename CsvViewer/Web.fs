@@ -18,7 +18,7 @@ let handleCsvFileUpload (request : HttpRequest) =
       file.tempFilePath
       |> File.ReadAllText
       |> storeCsv tableName
-      OK "Successfully Saved"
+      Redirection.redirect "/?msg=File Uploaded Successfully"
     else
       BAD_REQUEST "Upload a CSV file"
   | None->
@@ -36,7 +36,8 @@ let handleCsvQuery (request : HttpRequest) =
 
 let app =
   choose [
-    POST >=> path "/upload" >=> (request handleCsvFileUpload)
+    POST >=> path "/" >=> (request handleCsvFileUpload)
     GET >=> path "/view" >=> (request handleCsvQuery)
     GET >=> path "/" >=> file "index.html"
+    GET >=> path "/index.js" >=> file "index.js"
   ]

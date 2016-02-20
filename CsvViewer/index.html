@@ -1,3 +1,106 @@
-<p>
-  Hello World!
-</p>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Suave CSV Parser</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">CSV Viewer</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="http://about.me/tamizhvendan">About</a></li>
+            <li><a href="mailto:tamizh88@gmail.com">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+
+      <div style="padding:80px 15px">
+        <div class="alert alert-success" role="alert" id="msg" style="display:none"></div>
+        <form class="form-horizontal" method="post" enctype="multipart/form-data">
+        <fieldset>
+
+        <!-- Form Name -->
+        <legend>Upload a CSV  file</legend>
+
+        <!-- Button -->
+
+
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="tableName">Text Input</label>
+          <div class="col-md-4">
+          <input id="tableName" name="tableName" type="text" placeholder="placeholder" class="form-control input-md">
+
+          </div>
+        </div>
+
+        <!-- File Button -->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="filebutton">Upload</label>
+          <div class="col-md-4">
+            <input id="filebutton" name="filebutton" class="input-file" type="file">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="singlebutton"></label>
+          <div class="col-md-4">
+
+            <input type="submit" value="Upload" class="btn btn-primary" />
+          </div>
+        </div>
+
+        </fieldset>
+        </form>
+        <form class="form-horizontal">
+        <fieldset>
+
+        <!-- Form Name -->
+        <legend>Query Viewer</legend>
+
+        <!-- Textarea -->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="query">Query</label>
+          <div class="col-md-4">
+            <textarea class="form-control" id="query" name="query" cols="40">SELECT * FROM tablename</textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="singlebutton"></label>
+          <div class="col-md-4">
+            <button id="viewQueryData" name="singlebutton" class="btn btn-primary">View Data</button>
+
+          </div>
+        </div>
+
+        </fieldset>
+        </form>
+
+        <div class="alert alert-danger" role="alert" id="outputError" style="display:none"></div>
+        <div class="well" id="output" style="display:none">
+
+        </div>
+
+      </div>
+
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="/index.js"> </script>
+  </body>
+</html>
