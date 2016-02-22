@@ -10,7 +10,7 @@ let private storage  =
 
 let private toLower (s : string) = s.ToLower()
 
-let storeCsv csvName content = 
+let storeCsv csvName content =
   storage.Add(toLower csvName, content)
 
 let retrieveCsv (From csvName) = storage.[toLower csvName]
@@ -45,6 +45,7 @@ let toJObject headers (Select identifier) (csvRow : CsvRow) =
   jObject
 
 let applyQuery query csvContent =
+
   let csv = CsvFile.Parse csvContent
   let rows =
     match query.Where with

@@ -21,14 +21,14 @@ $(function(){
       if (data.length) {
         var headers = Object.keys(data[0]).map(function(name){
             return "<th>" + name + "</th>";
-        }).join();;
+        }).join('');;
         var header = "<thead><tr>" + headers + "</tr><thead>";
         var bodyContent = data.map(function(o){
           var values = Object.keys(o).map(function(k){
             return "<td>" + o[k] + "</td>";
-          }).join();
+          }).join('');
           return "<tr>" + values + "</tr>";
-        }).join();
+        }).join('');
         var body = "<tbody>" + bodyContent + "</tbody>";
         var table = "<table class='table'>" + header + body + "</table>";
         $("#output").show().html(table);

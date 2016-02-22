@@ -6,26 +6,35 @@ open FParsec
 let pstringCIWS str = pstringCI str .>> spaces
 let pstringWS str = pstring str .>> spaces
 let stringReturnWS str r = stringReturn str r .>> spaces
-let pName label = many1SatisfyL isLetter label .>> spaces
+let isWhiteSpace c = c = ' '
+let isUnderScore c = c = '_'
+let pIdentifierName label =
+  let isIdentifierChar c = isLetter c || isDigit c || isUnderScore c
+  many1SatisfyL isIdentifierChar label .>> spaces
+
+let pStringValue =
+  let isString c =
+    isLetter c || isWhiteSpace c || isDigit c || isUnderScore c
+  many1SatisfyL isString "string value"
 
 let pasterik = stringReturnWS "*" Asterisk
 let pattributes =
-  sepBy1 (pName "attribute name")  (pstringWS ",")
+  sepBy1 (pIdentifierName "attribute name")  (pstringWS ",")
   |>> (fun names -> names |> List.map Attribute |> Attributes)
 let pIdentifier =  pasterik <|> pattributes
 let pselect =
   pipe2 (pstringCIWS "select") pIdentifier (fun _ attr -> Select(attr))
 let paction = pselect
 
-let pFrom = pstringCI "from"  .>> spaces >>. pName "table name" |>> From
+let pFrom = pstringCI "from"  .>> spaces >>. pIdentifierName "table name" |>> From
 
 let pOperator = stringReturnWS "=" Equal <|> stringReturnWS "<>" NotEqual
 let pStringOperant =
-  pchar '\'' >>. pName "operant string value" .>> pchar '\'' |>> String
+  pchar '\'' >>. pStringValue .>> pchar '\'' |>> String
 let pIntOperant = pint32 |>> Int
 let pOperant = pStringOperant <|> pIntOperant
 let pCondtion =
-  (pName "attribute name") .>>. pOperator .>>. pOperant
+  (pIdentifierName "attribute name") .>>. pOperator .>>. pOperant
   |>> fun ((attrName, operator), operant) ->
               {
                 Attribute = Attribute(attrName)
