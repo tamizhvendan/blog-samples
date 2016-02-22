@@ -15,18 +15,18 @@ let storeCsv csvName content =
 
 let retrieveCsv (From csvName) = storage.[toLower csvName]
 
-let filterRows condtion (rows : CsvRow seq) =
-  let (Attribute attribute) = condtion.Attribute
+let filterRows condition (rows : CsvRow seq) =
+  let (Attribute attribute) = condition.Attribute
+  let compFn operant =
+    match condition.Operator with
+    | Equal -> (=) operant
+    | NotEqual -> (<>) operant
   let isFilterable (row : CsvRow) =
-    match condtion.Operant, condtion.Operator with
-    | Int i, Equal ->
-      row.GetColumn attribute |> int |> (=) i
-    | Int i, NotEqual ->
-      row.GetColumn attribute |> int |> (<>) i
-    | String str, Equal ->
-      row.GetColumn attribute |> (=) str
-    | String str, NotEqual ->
-      row.GetColumn attribute |> (<>) str
+    match condition.Operant with
+    | Int i ->
+      row.GetColumn attribute |> int |> compFn i
+    | String str ->
+      row.GetColumn attribute |> compFn str
   rows
   |> Seq.filter isFilterable
 
