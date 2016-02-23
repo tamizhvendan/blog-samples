@@ -1,0 +1,9 @@
+NUGET
+  remote: https://www.nuget.org/api/v2
+  specs:
+    Chessie (0.4.0)
+      FSharp.Core
+    FSharp.Core (4.0.0.1)
+    NEventStore (5.2.0)
+    Suave (1.1.1)
+      FSharp.Core (>= 3.1.2.5)
