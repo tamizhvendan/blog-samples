@@ -19,7 +19,7 @@ type Command =
 type Event =
   | TabOpened of OpenTab
 
-type AggregateRoot =
+type State =
   | ClosedTab
   | OpenedTab of OpenTab
 
@@ -27,15 +27,16 @@ type InvalidState =
   | TabAlreadyOpened
 
 
-let apply event aggregate =
-  match aggregate, event  with
+let apply event state =
+  match state, event  with
   | ClosedTab, TabOpened openTab  -> OpenedTab openTab
-  | _ -> aggregate 
+  | _ -> state
 
-let execute command aggregate =
+let execute command state =
   match command with
   | OpenTab tab ->
-    match aggregate with
+    match state with
     | ClosedTab ->
-      ok {Tab = tab; OpenedAt = DateTime.Now}
+       {Tab = tab; OpenedAt = DateTime.Now}
+       |> TabOpened |> ok
     | _ -> fail TabAlreadyOpened
