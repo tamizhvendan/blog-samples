@@ -3,33 +3,24 @@ open Events
 open Domain
 
 type PartiallyServedOrder = {
-  PlacedOrder : PlaceOrder
+  PlacedOrder : Order
   ServedItems : OrderItem list
   NonServedItems : OrderItem list
 }
 
 type State =
   | ClosedTab
-  | OpenedTab of Tab
-  | PlacedOrder of PlaceOrder
+  | OpenedTab
+  | PlacedOrder of Order
   | OrderPartiallyServed of PartiallyServedOrder
-  | OrderServed of PlaceOrder
-
-type Error =
-  | TabAlreadyOpened
-  | CanNotOrderWithClosedTab
-  | OrderAlreadyPlaced
-  | ServingNonOrderedItem of OrderItem * OrderItem list
-  | CanNotServeForNonPlacedOrder
-  | CanNotServeWithClosedTab
-  | OrderAlreadyServed
+  | OrderServed of Order
 
 let apply state event  =
   match state, event  with
-  | ClosedTab, TabOpened openTab  -> OpenedTab openTab
+  | ClosedTab, TabOpened -> OpenedTab
   | OpenedTab _, OrderPlaced placeOrder -> PlacedOrder placeOrder
   | PlacedOrder placeOrder, ItemServed item ->
-      let nonServedItems = placeOrder.Order.Items |> List.filter ((<>) item)
+      let nonServedItems = placeOrder.Items |> List.filter ((<>) item)
       match nonServedItems.Length = 0 with
       | true -> OrderServed placeOrder
       | false -> OrderPartiallyServed {
@@ -45,4 +36,5 @@ let apply state event  =
                     pso with
                       ServedItems =  item :: pso.ServedItems
                       NonServedItems = nonServedItems }
-    | _ -> state
+  | OrderServed _, TabClosed -> ClosedTab
+  | _ -> state

@@ -5,25 +5,22 @@ open Events
 open Commands
 open Chessie.ErrorHandling
 open Aggregates
+open Errors
 
-let handleOpenTab tab state =
-  match state with
-  | ClosedTab ->
-     tab |> TabOpened |> ok
+let handleOpenTab = function
+  | ClosedTab -> TabOpened |> ok
   | _ -> fail TabAlreadyOpened
 
 let handlePlaceOrder order state =
   match state with
-  | OpenedTab tab ->
-      {Order = order; Tab = tab}
-      |> OrderPlaced |> ok
+  | OpenedTab _ -> order |> OrderPlaced |> ok
   | ClosedTab -> fail CanNotOrderWithClosedTab
   | _ -> fail OrderAlreadyPlaced
 
-let handleServeItems item state =
+let handleServeItem item state =
   match state with
   | PlacedOrder placedOrder ->
-      let orderedItems = placedOrder.Order.Items
+      let orderedItems = placedOrder.Items
       match List.contains item orderedItems  with
       | true -> ItemServed item |> ok
       | false -> (item, orderedItems) |> ServingNonOrderedItem |> fail
@@ -36,12 +33,21 @@ let handleServeItems item state =
   | OpenedTab _ -> CanNotServeForNonPlacedOrder |> fail
   | ClosedTab -> CanNotServeWithClosedTab |> fail
 
+let handleCloseTab (Payment amount) state =
+  match state with
+  | OrderServed order ->
+      match order.TotalAmount = amount with
+      | true -> TabClosed |> ok
+      | false ->
+        (Payment(amount), order.TotalAmount) |> InvalidPayment |> fail
+  | _ -> CanNotPayForNonServedOrder |> fail
 
 let execute state command  =
   match command with
-  | OpenTab tab -> handleOpenTab tab state
+  | OpenTab -> handleOpenTab state
   | PlaceOrder order -> handlePlaceOrder order state
-  | ServeItems item -> handleServeItems item state
+  | ServeItem item -> handleServeItem item state
+  | CloseTab payment -> handleCloseTab payment state
 
 let evolve state command =
   match execute state command  with

@@ -2,6 +2,7 @@ module Commands
 open Domain
 
 type Command =
-  | OpenTab of Tab
+  | OpenTab
   | PlaceOrder of Order
-  | ServeItems of OrderItem
+  | ServeItem of OrderItem
+  | CloseTab of Payment
