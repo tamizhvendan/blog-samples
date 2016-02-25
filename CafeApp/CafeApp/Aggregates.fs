@@ -4,6 +4,9 @@ open Events
 type State =
   | ClosedTab
   | OpenedTab of OpenTab
+  | PlacedOrder of PlaceOrder
 
-type InvalidState =
+type Error =
   | TabAlreadyOpened
+  | CanNotOrderWithClosedTab
+  | OrderAlreadyPlaced
