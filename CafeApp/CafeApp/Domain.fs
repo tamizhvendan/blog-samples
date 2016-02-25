@@ -19,5 +19,5 @@ type OrderItem =
 
 type Order = {
   Id : Guid
-  OrderItems : OrderItem list
+  Items : OrderItem list
 }

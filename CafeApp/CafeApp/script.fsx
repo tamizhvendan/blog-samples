@@ -30,7 +30,7 @@ let salad = Food {
   Description = "Salad"
 }
 let order = {
-  OrderItems = [coke;salad]
+  Items = [coke;salad]
   Id = Guid.NewGuid()
 }
 let placeOrder = PlaceOrder order

@@ -2,17 +2,12 @@ module Events
 open Domain
 open System
 
-type OpenTab = {
-  Tab : Tab
-  OpenedAt : DateTime
-}
-
 type PlaceOrder = {
   Order : Order
-  PlacedAt : DateTime
   Tab : Tab
 }
 
 type Event =
-  | TabOpened of OpenTab
+  | TabOpened of Tab
   | OrderPlaced of PlaceOrder
+  | ItemServed of OrderItem
