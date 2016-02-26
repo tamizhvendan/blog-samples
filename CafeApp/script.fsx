@@ -19,29 +19,30 @@ open Chessie.ErrorHandling
 let coke = DrinksItem {
     MenuNumber = 10
     Price = 2.5m
-    Description = "Coke"
+    Name = "Coke"
 }
 let salad = FoodItem {
   MenuNumber = 8
   Price = 5m
-  Description = "Salad"
+  Name = "Salad"
+}
+let pizza = FoodItem {
+  MenuNumber = 9
+  Price = 10m
+  Name = "Pizza"
 }
 let lemonade = DrinksItem {
   MenuNumber = 11
-  Description = "Lemonade"
+  Name = "Lemonade"
   Price = 1.5m
 }
-let order = {
-  Items = [Drinks(coke)]
-  Id = Guid.NewGuid()
-}
-let serveCoke = ServeDrinks coke
-//let serveSalad = ServeItem salad
-let serveLemonade = ServeDrinks lemonade
-let placeOrder = PlaceOrder order
-let closeTab = Payment(2.5m) |> CloseTab
-let commands = [OpenTab;placeOrder;serveCoke;closeTab]
 
+let serveCoke = ServeDrinks coke
+let serveSalad = ServeFood salad
+let prepareSalad = PrepareFood salad
+let serveLemonade = ServeDrinks lemonade
+let servePizza = ServeFood pizza
+let preparePizza = PrepareFood pizza
 let lift f m cmd =
   match m with
   | Ok((state,event),_) ->
@@ -56,6 +57,18 @@ let result initalState commands =
   let stateM = evolve initalState x
   xs |> List.fold (lift evolve) stateM
 
-
-
+let placeOrder = PlaceOrder {
+  Items = [Drinks(coke);Food(salad);Food(pizza)]
+  Id = Guid.NewGuid()
+}
+let closeTab = Payment(17.5m) |> CloseTab
+let commands =
+  [ OpenTab
+    placeOrder
+    serveCoke
+    prepareSalad
+    preparePizza
+    serveSalad
+    servePizza
+    closeTab]
 result ClosedTab commands

@@ -5,9 +5,15 @@ type Error =
   | TabAlreadyOpened
   | CanNotOrderWithClosedTab
   | OrderAlreadyPlaced
-  | ServingNonOrderedItem of OrderItem  * OrderItem list
   | ServingNonOrderedDrinks of DrinksItem  * DrinksItem list
+  | ServingNonOrderedFood of FoodItem  * FoodItem list
+  | CanNotPrepareNotOrderedFoods of FoodItem  * FoodItem list
+  | CanNotServeNonPreparedFood
+  | FoodAlreadyPrepared
   | CanNotServeForNonPlacedOrder
+  | CanNotServeWithClosedTabCanNotPrepareWithClosedTab
+  | CanNotPrepareForNonPlacedOrder
+  | CanNotPrepareWithClosedTab
   | CanNotServeWithClosedTab
   | OrderAlreadyServed
   | InvalidPayment of Payment * decimal

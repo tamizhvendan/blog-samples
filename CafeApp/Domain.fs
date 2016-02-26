@@ -10,7 +10,7 @@ open System
 type Item = {
   MenuNumber : int
   Price : decimal
-  Description : string
+  Name : string
 }
 
 type FoodItem = FoodItem of Item

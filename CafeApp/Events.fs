@@ -8,7 +8,7 @@ type PlacedOrder = {
   Id : Guid
 }
 
-let placedOrderAmount po = 
+let placedOrderAmount po =
   let foodAmount =
     po.FoodItems |> List.map (Food >> price) |> List.sum
   let drinksAmount =
@@ -19,6 +19,7 @@ type Event =
   | TabOpened
   | OrderPlaced of PlacedOrder
   | DrinksServed of DrinksItem
-  | ItemServed of OrderItem
+  | FoodPrepared of FoodItem
+  | FoodServed of FoodItem
   | PaymentMade of Payment
   | TabClosed
