@@ -16,31 +16,31 @@ open System
 open Chessie.ErrorHandling
 
 
-let coke = Drinks {
+let coke = DrinksItem {
     MenuNumber = 10
     Price = 2.5m
     Description = "Coke"
 }
-let salad = Food {
+let salad = FoodItem {
   MenuNumber = 8
   Price = 5m
   Description = "Salad"
 }
-let lemonade = Drinks {
+let lemonade = DrinksItem {
   MenuNumber = 11
   Description = "Lemonade"
   Price = 1.5m
 }
 let order = {
-  Items = [coke;salad]
+  Items = [Drinks(coke)]
   Id = Guid.NewGuid()
 }
-let serveCoke = ServeItem coke
-let serveSalad = ServeItem salad
-let serveLemonade = ServeItem lemonade
+let serveCoke = ServeDrinks coke
+//let serveSalad = ServeItem salad
+let serveLemonade = ServeDrinks lemonade
 let placeOrder = PlaceOrder order
-let closeTab = Payment(7.5m) |> CloseTab
-let commands = [OpenTab;placeOrder;serveCoke;serveSalad;closeTab]
+let closeTab = Payment(2.5m) |> CloseTab
+let commands = [OpenTab;placeOrder;serveCoke;closeTab]
 
 let lift f m cmd =
   match m with

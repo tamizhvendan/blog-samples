@@ -13,16 +13,20 @@ type Item = {
   Description : string
 }
 
+type FoodItem = FoodItem of Item
+type DrinksItem = DrinksItem of Item
+
 type OrderItem =
-| Food of Item
-| Drinks of Item
+| Food of FoodItem
+| Drinks of DrinksItem
+
+let price = function
+| Food (FoodItem f) -> f.Price
+| Drinks (DrinksItem d) -> d.Price
 
 type Payment = Payment of decimal
 
 type Order = {
   Id : Guid
   Items : OrderItem list
-} with member this.TotalAmount =
-        this.Items
-        |> List.map (function | Food i -> i | Drinks i -> i)
-        |> List.sumBy (fun item -> item.Price)
+}

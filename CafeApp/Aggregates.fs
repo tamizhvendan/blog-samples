@@ -1,40 +1,52 @@
 module Aggregates
 open Events
 open Domain
+open System
 
 type PartiallyServedOrder = {
-  PlacedOrder : Order
-  ServedItems : OrderItem list
-  NonServedItems : OrderItem list
+  PlacedOrder : PlacedOrder
+  ServedDrinks : DrinksItem list
+  ServedFoods : FoodItem list
 }
+with
+    member this.NonServedDrinks =
+      List.except this.ServedDrinks this.PlacedOrder.DrinksItems
+    member this.NonServedFoods =
+      List.except this.ServedFoods this.PlacedOrder.FoodItems
+    member this.IsOrderServed =
+      List.isEmpty this.NonServedFoods && List.isEmpty this.NonServedDrinks
 
 type State =
   | ClosedTab
   | OpenedTab
-  | PlacedOrder of Order
+  | PlacedOrder of PlacedOrder
   | OrderPartiallyServed of PartiallyServedOrder
-  | OrderServed of Order
+  | OrderServed of PlacedOrder
+
+let getState (pso : PartiallyServedOrder) =
+  if pso.IsOrderServed then
+    OrderServed pso.PlacedOrder
+  else
+    OrderPartiallyServed pso
 
 let apply state event  =
   match state, event  with
   | ClosedTab, TabOpened -> OpenedTab
   | OpenedTab _, OrderPlaced placeOrder -> PlacedOrder placeOrder
-  | PlacedOrder placeOrder, ItemServed item ->
-      let nonServedItems = placeOrder.Items |> List.filter ((<>) item)
-      match nonServedItems.Length = 0 with
-      | true -> OrderServed placeOrder
-      | false -> OrderPartiallyServed {
-        PlacedOrder = placeOrder
-        ServedItems = [item]
-        NonServedItems = nonServedItems
-      }
-  | OrderPartiallyServed pso, ItemServed item ->
-      let nonServedItems = pso.NonServedItems |> List.filter ((<>) item)
-      match nonServedItems.Length = 0 with
-      | true -> OrderServed pso.PlacedOrder
-      | false -> OrderPartiallyServed {
-                    pso with
-                      ServedItems =  item :: pso.ServedItems
-                      NonServedItems = nonServedItems }
+  | PlacedOrder placedOrder, DrinksServed item ->
+      match List.contains item placedOrder.DrinksItems with
+      | true ->
+          {
+            PlacedOrder = placedOrder
+            ServedDrinks = [item]
+            ServedFoods = []
+          } |> getState
+      | false -> PlacedOrder placedOrder
+  | OrderPartiallyServed pso, DrinksServed item ->
+      match List.contains item pso.NonServedDrinks with
+      | true ->
+          {pso with ServedDrinks = item :: pso.ServedDrinks}
+          |> getState
+      | false -> PlacedOrder pso.PlacedOrder
   | OrderServed _, TabClosed -> ClosedTab
   | _ -> state

@@ -6,6 +6,7 @@ type Error =
   | CanNotOrderWithClosedTab
   | OrderAlreadyPlaced
   | ServingNonOrderedItem of OrderItem  * OrderItem list
+  | ServingNonOrderedDrinks of DrinksItem  * DrinksItem list
   | CanNotServeForNonPlacedOrder
   | CanNotServeWithClosedTab
   | OrderAlreadyServed

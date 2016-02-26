@@ -12,41 +12,50 @@ let handleOpenTab = function
   | _ -> fail TabAlreadyOpened
 
 let handlePlaceOrder order state =
+  let foods =
+    order.Items |> List.choose (function | (Food f) -> Some f | _ -> None)
+  let drinks =
+    order.Items |> List.choose (function | (Drinks d) -> Some d | _ -> None)
+  let placedOrder = {
+    FoodItems = foods
+    DrinksItems = drinks
+    Id = order.Id
+  }
   match state with
-  | OpenedTab _ -> order |> OrderPlaced |> ok
+  | OpenedTab _ -> placedOrder |> OrderPlaced |> ok
   | ClosedTab -> fail CanNotOrderWithClosedTab
   | _ -> fail OrderAlreadyPlaced
 
-let handleServeItem item state =
+let handleServeDrinks item state =
   match state with
   | PlacedOrder placedOrder ->
-      let orderedItems = placedOrder.Items
-      match List.contains item orderedItems  with
-      | true -> ItemServed item |> ok
-      | false -> (item, orderedItems) |> ServingNonOrderedItem |> fail
+      let orderedDrinks = placedOrder.DrinksItems
+      match List.contains item orderedDrinks with
+      | true -> DrinksServed item |> ok
+      | false -> (item, orderedDrinks) |> ServingNonOrderedDrinks |> fail
   | OrderPartiallyServed pso ->
-      let nonServedItems = pso.NonServedItems
-      match List.contains item nonServedItems with
-      | true -> ItemServed item |> ok
-      | false -> (item, nonServedItems) |> ServingNonOrderedItem |> fail
+      match List.contains item pso.NonServedDrinks with
+      | true -> DrinksServed item |> ok
+      | false -> (item, pso.NonServedDrinks) |> ServingNonOrderedDrinks |> fail
   | OrderServed _ -> OrderAlreadyServed |> fail
   | OpenedTab _ -> CanNotServeForNonPlacedOrder |> fail
   | ClosedTab -> CanNotServeWithClosedTab |> fail
 
 let handleCloseTab (Payment amount) state =
   match state with
-  | OrderServed order ->
-      match order.TotalAmount = amount with
+  | OrderServed po ->
+      let totalAmount = placedOrderAmount po
+      match totalAmount = amount with
       | true -> TabClosed |> ok
       | false ->
-        (Payment(amount), order.TotalAmount) |> InvalidPayment |> fail
+        (Payment(amount), totalAmount) |> InvalidPayment |> fail
   | _ -> CanNotPayForNonServedOrder |> fail
 
 let execute state command  =
   match command with
   | OpenTab -> handleOpenTab state
   | PlaceOrder order -> handlePlaceOrder order state
-  | ServeItem item -> handleServeItem item state
+  | ServeDrinks item -> handleServeDrinks item state
   | CloseTab payment -> handleCloseTab payment state
 
 let evolve state command =
