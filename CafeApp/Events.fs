@@ -5,7 +5,12 @@ open System
 type PlacedOrder = {
   FoodItems : FoodItem list
   DrinksItems : DrinksItem list
-  Id : Guid
+  Tab : Tab
+}
+
+type PreparedFood = {
+  FoodItem : FoodItem
+  Tab : Tab
 }
 
 let placedOrderAmount po =
@@ -16,10 +21,9 @@ let placedOrderAmount po =
   foodAmount + drinksAmount
 
 type Event =
-  | TabOpened
+  | TabOpened of Tab
   | OrderPlaced of PlacedOrder
   | DrinksServed of DrinksItem
-  | FoodPrepared of FoodItem
+  | FoodPrepared of PreparedFood
   | FoodServed of FoodItem
-  | PaymentMade of Payment
-  | TabClosed
+  | TabClosed of Payment

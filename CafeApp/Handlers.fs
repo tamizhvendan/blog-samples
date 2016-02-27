@@ -7,8 +7,8 @@ open Chessie.ErrorHandling
 open Aggregates
 open Errors
 
-let handleOpenTab = function
-  | ClosedTab -> TabOpened |> ok
+let handleOpenTab tab = function
+  | ClosedTab -> TabOpened tab |> ok
   | _ -> fail TabAlreadyOpened
 
 let handlePlaceOrder order state =
@@ -19,7 +19,7 @@ let handlePlaceOrder order state =
   let placedOrder = {
     FoodItems = foods
     DrinksItems = drinks
-    Id = order.Id
+    Tab = order.Tab
   }
   match state with
   | OpenedTab _ -> placedOrder |> OrderPlaced |> ok
@@ -46,14 +46,20 @@ let handlePrepareFood item state =
   | PlacedOrder placedOrder ->
       let orderedFoods = placedOrder.FoodItems
       match List.contains item orderedFoods with
-      | true -> FoodPrepared item |> ok
+      | true -> FoodPrepared {
+                  Tab = placedOrder.Tab
+                  FoodItem = item
+                } |> ok
       | false -> (item, orderedFoods) |> CanNotPrepareNotOrderedFoods |> fail
   | OrderInProgress ipo ->
       match List.contains item ipo.PreparedFoods with
       | true -> FoodAlreadyPrepared |> fail
       | false ->
         match List.contains item ipo.NonServedFoods with
-        | true -> FoodPrepared item |> ok
+        | true -> FoodPrepared {
+                    Tab = ipo.PlacedOrder.Tab
+                    FoodItem = item
+                  } |> ok
         | false ->
           (item, ipo.NonServedFoods) |> CanNotPrepareNotOrderedFoods |> fail
   | OrderServed _ -> OrderAlreadyServed |> fail
@@ -75,19 +81,19 @@ let handleServeFood item state =
     | OpenedTab _ -> CanNotServeForNonPlacedOrder |> fail
     | ClosedTab -> CanNotServeWithClosedTab |> fail
 
-let handleCloseTab (Payment amount) state =
+let handleCloseTab payment state =
   match state with
   | OrderServed po ->
       let totalAmount = placedOrderAmount po
-      match totalAmount = amount with
-      | true -> TabClosed |> ok
+      match totalAmount = payment.Amount with
+      | true -> TabClosed payment |> ok
       | false ->
-        (Payment(amount), totalAmount) |> InvalidPayment |> fail
+        (payment.Amount, totalAmount) |> InvalidPayment |> fail
   | _ -> CanNotPayForNonServedOrder |> fail
 
 let execute state command  =
   match command with
-  | OpenTab -> handleOpenTab state
+  | OpenTab tab -> handleOpenTab tab state
   | PlaceOrder order -> handlePlaceOrder order state
   | ServeDrinks item -> handleServeDrinks item state
   | PrepareFood item -> handlePrepareFood item state

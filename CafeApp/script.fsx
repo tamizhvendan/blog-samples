@@ -36,6 +36,11 @@ let lemonade = DrinksItem {
   Name = "Lemonade"
   Price = 1.5m
 }
+let tab = {
+  Id = System.Guid.NewGuid()
+  TableNumber = 1
+  Waiter = "David"
+}
 
 let serveCoke = ServeDrinks coke
 let serveSalad = ServeFood salad
@@ -52,18 +57,18 @@ let lift f m cmd =
 let result initalState commands =
   let x, xs =
     match commands with
-    | [] -> OpenTab, []
+    | [] -> OpenTab tab, []
     | x::xs -> x,xs
   let stateM = evolve initalState x
   xs |> List.fold (lift evolve) stateM
 
 let placeOrder = PlaceOrder {
   Items = [Drinks(coke);Food(salad);Food(pizza)]
-  Id = Guid.NewGuid()
+  Tab = tab
 }
-let closeTab = Payment(17.5m) |> CloseTab
+let closeTab = {Tab = tab; Amount = 17.5m} |> CloseTab
 let commands =
-  [ OpenTab
+  [ OpenTab tab
     placeOrder
     serveCoke
     prepareSalad

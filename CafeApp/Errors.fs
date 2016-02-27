@@ -16,5 +16,5 @@ type Error =
   | CanNotPrepareWithClosedTab
   | CanNotServeWithClosedTab
   | OrderAlreadyServed
-  | InvalidPayment of Payment * decimal
+  | InvalidPayment of decimal * decimal
   | CanNotPayForNonServedOrder

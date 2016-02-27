@@ -7,6 +7,12 @@ open System
 //  Waiter : string
 //}
 
+type Tab = {
+  Id : Guid
+  TableNumber : int
+  Waiter : string
+}
+
 type Item = {
   MenuNumber : int
   Price : decimal
@@ -24,9 +30,12 @@ let price = function
 | Food (FoodItem f) -> f.Price
 | Drinks (DrinksItem d) -> d.Price
 
-type Payment = Payment of decimal
+type Payment = {
+  Tab : Tab
+  Amount : decimal
+}
 
 type Order = {
-  Id : Guid
+  Tab : Tab
   Items : OrderItem list
 }
