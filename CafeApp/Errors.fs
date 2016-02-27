@@ -18,3 +18,5 @@ type Error =
   | OrderAlreadyServed
   | InvalidPayment of decimal * decimal
   | CanNotPayForNonServedOrder
+  | InvalidStateForSavingEvent
+  | ErrorWhileSavingEvent of System.Exception

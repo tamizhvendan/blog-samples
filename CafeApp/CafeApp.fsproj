@@ -53,6 +53,7 @@
     <Compile Include="Aggregates.fs" />
     <Compile Include="Errors.fs" />
     <Compile Include="Handlers.fs" />
+    <Compile Include="EventsStore.fs" />
     <Compile Include="ReadModel.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
