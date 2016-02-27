@@ -3,4 +3,4 @@ source https://www.nuget.org/api/v2
 nuget Suave
 nuget NEventStore
 nuget Chessie
-nuget Rx-Main
+nuget FSharp.Data

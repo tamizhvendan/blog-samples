@@ -2,12 +2,26 @@ module ReadModel
 open Chessie.ErrorHandling
 open Domain
 open Events
-open System.Reactive.Subjects
+open Data
+
+let projectReadModel e =
+  match e with
+  | TabOpened tab ->
+      updateTableStatus tab.TableNumber (Open tab.Id)
+  | OrderPlaced placedOrder ->
+      //{
+      //  Tab = placedOrder.Tab
+      //  FoodItems = placedOrder.FoodItems
+      //} |> ignore
+      ()
+  | FoodPrepared pf ->
+      pf |> ignore
+  | TabClosed payment ->
+      updateTableStatus payment.Tab.TableNumber Closed
+  | _ -> ()
 
 
-
-let eventStream = new Subject<Event>();
 
 let dispatchEvent e =
-  eventStream.OnNext(snd e)
+  projectReadModel (snd e)
   e |> ok

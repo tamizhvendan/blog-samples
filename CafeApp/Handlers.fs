@@ -11,16 +11,7 @@ let handleOpenTab tab = function
   | ClosedTab -> TabOpened tab |> ok
   | _ -> fail TabAlreadyOpened
 
-let handlePlaceOrder order state =
-  let foods =
-    order.Items |> List.choose (function | (Food f) -> Some f | _ -> None)
-  let drinks =
-    order.Items |> List.choose (function | (Drinks d) -> Some d | _ -> None)
-  let placedOrder = {
-    FoodItems = foods
-    DrinksItems = drinks
-    Tab = order.Tab
-  }
+let handlePlaceOrder placedOrder state =   
   match state with
   | OpenedTab _ -> placedOrder |> OrderPlaced |> ok
   | ClosedTab -> fail CanNotOrderWithClosedTab
@@ -47,7 +38,7 @@ let handlePrepareFood item state =
       let orderedFoods = placedOrder.FoodItems
       match List.contains item orderedFoods with
       | true -> FoodPrepared {
-                  Tab = placedOrder.Tab
+                  TabId = placedOrder.TabId
                   FoodItem = item
                 } |> ok
       | false -> (item, orderedFoods) |> CanNotPrepareNotOrderedFoods |> fail
@@ -57,7 +48,7 @@ let handlePrepareFood item state =
       | false ->
         match List.contains item ipo.NonServedFoods with
         | true -> FoodPrepared {
-                    Tab = ipo.PlacedOrder.Tab
+                    TabId = ipo.PlacedOrder.TabId
                     FoodItem = item
                   } |> ok
         | false ->

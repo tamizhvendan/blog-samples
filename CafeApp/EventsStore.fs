@@ -20,9 +20,9 @@ let saveEvent (eventStore : IStoreEvents) (state,event) =
   let tabId = function
     | ClosedTab -> None
     | OpenedTab tab -> Some tab.Id
-    | PlacedOrder op -> Some op.Tab.Id
-    | OrderInProgress ipo -> Some ipo.PlacedOrder.Tab.Id
-    | OrderServed payment -> Some payment.Tab.Id
+    | PlacedOrder po -> Some po.TabId
+    | OrderInProgress ipo -> Some ipo.PlacedOrder.TabId
+    | OrderServed payment -> Some payment.TabId
   match tabId state with
   | Some id ->
       try

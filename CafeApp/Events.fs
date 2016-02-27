@@ -2,22 +2,16 @@ module Events
 open Domain
 open System
 
-type PlacedOrder = {
-  FoodItems : FoodItem list
-  DrinksItems : DrinksItem list
-  Tab : Tab
-}
-
 type PreparedFood = {
   FoodItem : FoodItem
-  Tab : Tab
+  TabId : Guid
 }
 
 let placedOrderAmount po =
   let foodAmount =
-    po.FoodItems |> List.map (Food >> price) |> List.sum
+    po.FoodItems |> List.map (fun (FoodItem f) -> f.Price) |> List.sum
   let drinksAmount =
-    po.DrinksItems |> List.map (Drinks >> price) |> List.sum
+    po.DrinksItems |> List.map (fun (DrinksItem d) -> d.Price) |> List.sum
   foodAmount + drinksAmount
 
 type Event =

@@ -1,4 +1,5 @@
 #r "packages/Chessie/lib/net40/Chessie.dll"
+#r "packages/FSharp.Data/lib/net40/FSharp.Data.dll"
 #load "Domain.fs"
 #load "Commands.fs"
 #load "Events.fs"
@@ -14,7 +15,7 @@ open Handlers
 open Commands
 open System
 open Chessie.ErrorHandling
-
+open FSharp.Data
 
 let coke = DrinksItem {
     MenuNumber = 10
@@ -39,7 +40,6 @@ let lemonade = DrinksItem {
 let tab = {
   Id = System.Guid.NewGuid()
   TableNumber = 1
-  Waiter = "David"
 }
 
 let serveCoke = ServeDrinks coke
@@ -63,8 +63,9 @@ let result initalState commands =
   xs |> List.fold (lift evolve) stateM
 
 let placeOrder = PlaceOrder {
-  Items = [Drinks(coke);Food(salad);Food(pizza)]
-  Tab = tab
+  FoodItems = [salad;pizza]
+  DrinksItems = [coke]
+  TabId = tab.Id
 }
 let closeTab = {Tab = tab; Amount = 17.5m} |> CloseTab
 let commands =
