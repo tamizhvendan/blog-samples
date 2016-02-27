@@ -20,3 +20,4 @@ type Error =
   | CanNotPayForNonServedOrder
   | InvalidStateForSavingEvent
   | ErrorWhileSavingEvent of System.Exception
+  | ErrorWhileRetrievingEvents of System.Exception

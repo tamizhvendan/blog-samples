@@ -34,3 +34,14 @@ let saveEvent (eventStore : IStoreEvents) (state,event) =
         | ex -> ErrorWhileSavingEvent ex |> fail
   | None ->
       InvalidStateForSavingEvent |> fail
+
+let getState (eventStore : IStoreEvents) tabId =
+  try
+    use stream = eventStore.OpenStream (tabId.ToString())
+    stream.CommittedEvents
+    |> Seq.map (fun msg -> msg.Body)
+    |> Seq.cast<Event>
+    |> Seq.fold apply ClosedTab
+    |> ok
+  with
+    | ex -> ErrorWhileRetrievingEvents ex |> fail
