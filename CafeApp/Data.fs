@@ -35,17 +35,27 @@ let private chefToDos = new Dictionary<Guid, ChefToDo>()
 let addChefToDo (chefTodo : ChefToDo) =
   chefToDos.Add(chefTodo.TabId, chefTodo)
 let getChefToDos () = chefToDos.Values |> Seq.toList
+let removeFoodFromChefToDo item tabId =
+  let todo = chefToDos.[tabId]
+  let chefToDo =
+    { todo with FoodItems = List.filter (fun d -> d <> item) todo.FoodItems}
+  chefToDos.[tabId] <- chefToDo
 
 let private waiterToDos = new Dictionary<Guid, WaiterToDo>()
 let addWaiterToDo (waiterToDo : WaiterToDo)  =
   waiterToDos.Add(waiterToDo.TabId, waiterToDo)
+let addFoodToWaiterToDo item tabId =
+  let todo = waiterToDos.[tabId]
+  let waiterToDo =
+    {todo with FoodItems = item :: todo.FoodItems}
+  waiterToDos.[tabId] <- waiterToDo
 let getWaiterToDos () =
   waiterToDos.Values |> Seq.toList
 let removeDrinksFromWaiterToDo item tabId =
+  let todo = waiterToDos.[tabId]
   let waiterToDo =
-    { waiterToDos.[tabId] with
-        DrinksItem =
-          List.filter (fun d -> d <> item) waiterToDos.[tabId].DrinksItem }
+    { todo with
+        DrinksItem = List.filter (fun d -> d <> item) todo.DrinksItem }
   waiterToDos.[tabId] <- waiterToDo
 
 let private foodItems =

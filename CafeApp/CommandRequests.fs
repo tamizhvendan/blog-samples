@@ -52,3 +52,18 @@ let (|ServeDrinksRequest|_|) payload =
     (req.TabId, req.MenuNumber) |> Some
   with
   | ex -> None
+
+[<Literal>]
+let PrepareFoodJson = """{
+    "prepareFood" : {
+      "tabId" : "2a964d85-f503-40a1-8014-2c8ee5ac4a49",
+      "menuNumber" : 10
+    }
+}"""
+type PrepareFoodReq = JsonProvider<PrepareFoodJson>
+let (|PrepareFoodRequest|_|) payload =
+  try
+    let req = PrepareFoodReq.Parse(payload).PrepareFood
+    (req.TabId, req.MenuNumber) |> Some
+  with
+  | ex -> None

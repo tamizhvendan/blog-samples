@@ -34,34 +34,28 @@ let handleServeDrinks item tabId state =
 
 let handlePrepareFood item tabId state =
   match state with
-  | PlacedOrder placedOrder ->
-      let orderedFoods = placedOrder.FoodItems
+  | PlacedOrder order ->
+      let orderedFoods = order.FoodItems
       match List.contains item orderedFoods with
-      | true -> FoodPrepared {
-                  TabId = placedOrder.TabId
-                  FoodItem = item
-                } |> ok
+      | true -> (item, tabId) |> FoodPrepared |> ok
       | false -> (item, orderedFoods) |> CanNotPrepareNotOrderedFoods |> fail
   | OrderInProgress ipo ->
       match List.contains item ipo.PreparedFoods with
       | true -> FoodAlreadyPrepared |> fail
       | false ->
         match List.contains item ipo.NonServedFoods with
-        | true -> FoodPrepared {
-                    TabId = tabId
-                    FoodItem = item
-                  } |> ok
+        | true ->  (item, tabId) |> FoodPrepared |> ok
         | false ->
           (item, ipo.NonServedFoods) |> CanNotPrepareNotOrderedFoods |> fail
   | OrderServed _ -> OrderAlreadyServed |> fail
   | OpenedTab _ -> CanNotPrepareForNonPlacedOrder |> fail
   | ClosedTab -> CanNotPrepareWithClosedTab |> fail
 
-let handleServeFood item state =
+let handleServeFood item tabId state =
     match state with
     | OrderInProgress ipo ->
         match List.contains item ipo.PreparedFoods with
-        | true -> FoodServed item |> ok
+        | true -> (item, tabId) |> FoodServed  |> ok
         | false ->
           match List.contains item ipo.NonServedFoods with
           | true -> CanNotServeNonPreparedFood |> fail
@@ -88,7 +82,7 @@ let execute state command  =
   | PlaceOrder order -> handlePlaceOrder order state
   | ServeDrinks (item, tabId) -> handleServeDrinks item tabId state
   | PrepareFood (item, tabId) -> handlePrepareFood item tabId state
-  | ServeFood (item, _) -> handleServeFood item state
+  | ServeFood (item, tabId) -> handleServeFood item tabId state
   | CloseTab payment -> handleCloseTab payment state
 
 

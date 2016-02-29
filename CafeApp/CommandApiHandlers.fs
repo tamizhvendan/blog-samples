@@ -62,9 +62,21 @@ let handlePlaceOrder
 let handleServeDrinks eventStore (tabId, drinksMenuNumber) =
     let table = getTableByTabId tabId
     let drinks = getDrinksByMenuNumber drinksMenuNumber
-    match validateServeDrinks table drinks with
+    let msg = sprintf "Invalid Drinks Menu Number %d" drinksMenuNumber
+    match validateItem table drinks msg with
     | Choice1Of2 drinks ->
       (drinks,tabId)
       |> ServeDrinks
+      |> handleCommand eventStore
+    | Choice2Of2 err -> BAD_REQUEST err
+
+let handlePrepareFood eventStore (tabId, foodMenuNumber) =
+    let table = getTableByTabId tabId
+    let food = getFoodByMenuNumber foodMenuNumber
+    let msg = sprintf "Invalid Food Menu Number %d" foodMenuNumber
+    match validateItem table food msg with
+    | Choice1Of2 food ->
+      (food,tabId)
+      |> PrepareFood
       |> handleCommand eventStore
     | Choice2Of2 err -> BAD_REQUEST err

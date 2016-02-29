@@ -22,8 +22,9 @@ let projectReadModel e =
       } |> addWaiterToDo
   | DrinksServed (item,tabId) ->
       removeDrinksFromWaiterToDo item tabId
-  | FoodPrepared pf ->
-      pf |> ignore
+  | FoodPrepared (item, tabId) ->
+      removeFoodFromChefToDo item tabId
+      addFoodToWaiterToDo item tabId
   | TabClosed payment ->
       updateTableStatus payment.Tab.TableNumber Closed
   | _ -> ()

@@ -29,10 +29,10 @@ let validatePlaceOrder table drinksItems foodItems =
         sprintf "Invalid Drinks Keys : %A" keys |> Choice2Of2
   | None -> Choice2Of2 "Invalid Tab Id"
 
-let validateServeDrinks table drinks =
+let validateItem table item msg =
   match table with
   | Some (t) ->
-    match drinks with
-    | Some d -> d |> Choice1Of2
-    | None -> Choice2Of2 "Invalid Drinks Key"
+    match item with
+    | Some i -> i |> Choice1Of2
+    | None -> Choice2Of2 msg
   | None -> Choice2Of2 "Invalid Tab Id"

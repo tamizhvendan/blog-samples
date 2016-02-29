@@ -52,28 +52,28 @@ let apply state event  =
           {ipo with ServedDrinks = item :: ipo.ServedDrinks}
           |> getState
       | false -> OrderInProgress ipo
-  | PlacedOrder placedOrder, FoodPrepared pf ->
-      match List.contains pf.FoodItem placedOrder.FoodItems with
+  | PlacedOrder placedOrder, FoodPrepared (food, _) ->
+      match List.contains food placedOrder.FoodItems with
       | true ->
           {
             PlacedOrder = placedOrder
             ServedDrinks = []
             ServedFoods = []
-            PreparedFoods = [pf.FoodItem]
+            PreparedFoods = [food]
           } |> OrderInProgress
       | false -> PlacedOrder placedOrder
-  | OrderInProgress ipo, FoodPrepared pf ->
-      match List.contains pf.FoodItem ipo.NonPreparedFoods with
+  | OrderInProgress ipo, FoodPrepared (food,_) ->
+      match List.contains food ipo.NonPreparedFoods with
       | true ->
-          {ipo with PreparedFoods = pf.FoodItem :: ipo.PreparedFoods}
+          {ipo with PreparedFoods = food :: ipo.PreparedFoods}
           |> OrderInProgress
       | false -> OrderInProgress ipo
-  | OrderInProgress ipo, FoodServed item ->
-      let isPrepared = List.contains item ipo.PreparedFoods
-      let isNonServed = List.contains item ipo.NonServedFoods
+  | OrderInProgress ipo, FoodServed (food, _) ->
+      let isPrepared = List.contains food ipo.PreparedFoods
+      let isNonServed = List.contains food ipo.NonServedFoods
       match isPrepared, isNonServed with
       | true,true ->
-          {ipo with ServedFoods = item :: ipo.ServedFoods}
+          {ipo with ServedFoods = food :: ipo.ServedFoods}
           |> getState
       | _ -> OrderInProgress ipo
   | OrderServed _, TabClosed _ -> ClosedTab
