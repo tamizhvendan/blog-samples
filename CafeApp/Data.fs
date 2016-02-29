@@ -4,25 +4,6 @@ open System.Collections.Generic
 open Domain
 open Events
 
-type TabStatus = Open of Guid | Closed
-
-type Table = {
-  Number : int
-  Waiter : string
-  Status : TabStatus
-}
-
-type ChefToDo = {
-  TabId : Guid
-  FoodItems : FoodItem list
-}
-
-type WaiterToDo = {
-  TabId : Guid
-  FoodItems : FoodItem list
-  DrinksItem : DrinksItem list
-}
-
 let private tables =
   let dict = new Dictionary<int, Table>()
   dict.Add(1, {Number = 1; Waiter = "X"; Status = Closed})
@@ -40,12 +21,13 @@ let getTableByTabId tabId =
                   match t.Status with
                   | (Open id) -> id = tabId
                   | _ -> false)
-
-let getTableByNumber tableNumber =
-  if tables.ContainsKey tableNumber then
-    tables.[tableNumber] |> Some
+let getItem<'a> (dict : Dictionary<int,'a>) key =
+  if dict.ContainsKey key then
+    dict.[key] |> Some
   else
     None
+
+let getTableByNumber = getItem tables
 
 let getTables () = tables.Values |> Seq.toList
 
@@ -59,6 +41,12 @@ let addWaiterToDo (waiterToDo : WaiterToDo)  =
   waiterToDos.Add(waiterToDo.TabId, waiterToDo)
 let getWaiterToDos () =
   waiterToDos.Values |> Seq.toList
+let removeDrinksFromWaiterToDo item tabId =
+  let waiterToDo =
+    { waiterToDos.[tabId] with
+        DrinksItem =
+          List.filter (fun d -> d <> item) waiterToDos.[tabId].DrinksItem }
+  waiterToDos.[tabId] <- waiterToDo
 
 let private foodItems =
   let dict = new Dictionary<int, FoodItem>()
@@ -84,8 +72,10 @@ let private getItems<'a> (dict : Dictionary<int,'a>) keys =
   else
     invalidKeys |> Choice2Of2
 
-let getFoodItems = getItems foodItems
 
+
+let getFoodItems = getItems foodItems
+let getFoodByMenuNumber = getItem foodItems
 let private drinksItems =
   let dict = new Dictionary<int, DrinksItem>()
   dict.Add(10, DrinksItem {
@@ -101,3 +91,4 @@ let private drinksItems =
   dict
 
 let getDrinksItems = getItems drinksItems
+let getDrinksByMenuNumber = getItem drinksItems

@@ -25,3 +25,22 @@ type Order = {
   DrinksItems : DrinksItem list
   TabId : Guid
 }
+
+type TabStatus = Open of Guid | Closed
+
+type Table = {
+  Number : int
+  Waiter : string
+  Status : TabStatus
+}
+
+type ChefToDo = {
+  TabId : Guid
+  FoodItems : FoodItem list
+}
+
+type WaiterToDo = {
+  TabId : Guid
+  FoodItems : FoodItem list
+  DrinksItem : DrinksItem list
+}

@@ -7,7 +7,7 @@ type PreparedFood = {
   TabId : Guid
 }
 
-let placedOrderAmount po =
+let placedOrderAmount (po : Order) =
   let foodAmount =
     po.FoodItems |> List.map (fun (FoodItem f) -> f.Price) |> List.sum
   let drinksAmount =
@@ -17,7 +17,7 @@ let placedOrderAmount po =
 type Event =
   | TabOpened of Tab
   | OrderPlaced of Order
-  | DrinksServed of DrinksItem
+  | DrinksServed of DrinksItem * Guid
   | FoodPrepared of PreparedFood
   | FoodServed of FoodItem
   | TabClosed of Payment

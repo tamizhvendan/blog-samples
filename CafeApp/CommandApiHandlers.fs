@@ -4,7 +4,7 @@ open Domain
 open Data
 open Suave.RequestErrors
 open Suave.ServerErrors
-open CommandRequests
+
 open Suave.Successful
 open Aggregates
 open ReadModel
@@ -37,13 +37,34 @@ let handleCommand eventStore command =
 
 
 let handleOpenTab eventStore tab  =
-  match validateOpenTab tab with
+  let table = getTableByNumber tab.TableNumber
+  match validateOpenTab table tab with
   | Choice1Of2(_) -> handleCommand eventStore (OpenTab tab)
   | Choice2Of2 err -> BAD_REQUEST err
 
-let handlePlaceOrder eventStore (placeOrder : PlaceOrderReq.PlaceOrder) =
-  let foodItems = getFoodItems placeOrder.Foods
-  let drinksItems = getDrinksItems placeOrder.Drinks
-  match validatePlaceOrder placeOrder.TabId drinksItems foodItems with
-  | Choice1Of2 order -> handleCommand eventStore (PlaceOrder order)
+let handlePlaceOrder
+    eventStore (tabId, drinksMenuNumbers, foodMenuNumbers) =
+
+  let foodItems = getFoodItems foodMenuNumbers
+  let drinksItems = getDrinksItems drinksMenuNumbers
+  let table = getTableByTabId tabId
+  match validatePlaceOrder table drinksItems foodItems with
+  | Choice1Of2 (drinks,foods) ->
+    {
+      TabId = tabId
+      FoodItems = foods
+      DrinksItems = drinks
+    }
+    |> PlaceOrder
+    |> handleCommand eventStore
   | Choice2Of2 err -> BAD_REQUEST err
+
+let handleServeDrinks eventStore (tabId, drinksMenuNumber) =
+    let table = getTableByTabId tabId
+    let drinks = getDrinksByMenuNumber drinksMenuNumber
+    match validateServeDrinks table drinks with
+    | Choice1Of2 drinks ->
+      (drinks,tabId)
+      |> ServeDrinks
+      |> handleCommand eventStore
+    | Choice2Of2 err -> BAD_REQUEST err

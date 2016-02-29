@@ -36,7 +36,7 @@ let apply state event  =
   match state, event  with
   | ClosedTab, TabOpened tab -> OpenedTab tab
   | OpenedTab _, OrderPlaced placeOrder -> PlacedOrder placeOrder
-  | PlacedOrder placedOrder, DrinksServed item ->
+  | PlacedOrder placedOrder, DrinksServed (item,_) ->
       match List.contains item placedOrder.DrinksItems with
       | true ->
           {
@@ -46,7 +46,7 @@ let apply state event  =
             PreparedFoods = []
           } |> getState
       | false -> PlacedOrder placedOrder
-  | OrderInProgress ipo, DrinksServed item ->
+  | OrderInProgress ipo, DrinksServed (item,_) ->
       match List.contains item ipo.NonServedDrinks with
       | true ->
           {ipo with ServedDrinks = item :: ipo.ServedDrinks}

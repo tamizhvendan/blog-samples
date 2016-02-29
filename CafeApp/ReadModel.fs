@@ -20,6 +20,8 @@ let projectReadModel e =
         DrinksItem = order.DrinksItems
         FoodItems = []
       } |> addWaiterToDo
+  | DrinksServed (item,tabId) ->
+      removeDrinksFromWaiterToDo item tabId
   | FoodPrepared pf ->
       pf |> ignore
   | TabClosed payment ->

@@ -17,16 +17,16 @@ let handlePlaceOrder placedOrder state =
   | ClosedTab -> fail CanNotOrderWithClosedTab
   | _ -> fail OrderAlreadyPlaced
 
-let handleServeDrinks item state =
+let handleServeDrinks item tabId state =
   match state with
-  | PlacedOrder placedOrder ->
-      let orderedDrinks = placedOrder.DrinksItems
+  | PlacedOrder order ->
+      let orderedDrinks = order.DrinksItems
       match List.contains item orderedDrinks with
-      | true -> DrinksServed item |> ok
+      | true -> DrinksServed (item, tabId) |> ok
       | false -> (item, orderedDrinks) |> ServingNonOrderedDrinks |> fail
   | OrderInProgress ipo ->
       match List.contains item ipo.NonServedDrinks with
-      | true -> DrinksServed item |> ok
+      | true -> DrinksServed (item, tabId) |> ok
       | false -> (item, ipo.NonServedDrinks) |> ServingNonOrderedDrinks |> fail
   | OrderServed _ -> OrderAlreadyServed |> fail
   | OpenedTab _ -> CanNotServeForNonPlacedOrder |> fail
@@ -86,7 +86,7 @@ let execute state command  =
   match command with
   | OpenTab tab -> handleOpenTab tab state
   | PlaceOrder order -> handlePlaceOrder order state
-  | ServeDrinks (item, _) -> handleServeDrinks item state
+  | ServeDrinks (item, tabId) -> handleServeDrinks item tabId state
   | PrepareFood (item, tabId) -> handlePrepareFood item tabId state
   | ServeFood (item, _) -> handleServeFood item state
   | CloseTab payment -> handleCloseTab payment state

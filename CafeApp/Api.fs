@@ -16,6 +16,7 @@ let commandHandler eventStore (request : HttpRequest) =
   match Encoding.UTF8.GetString request.rawForm with
   | OpenTabRequest tab -> handleOpenTab eventStore tab
   | PlaceOrderRequest placeOrder -> handlePlaceOrder eventStore placeOrder
+  | ServeDrinksRequest serveDrinks -> handleServeDrinks eventStore serveDrinks
   | _ -> BAD_REQUEST "Invalid Command Payload"
 
 let api eventStore =
