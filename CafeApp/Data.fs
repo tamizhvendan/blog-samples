@@ -14,7 +14,7 @@ type Table = {
 
 let private tables =
   let dict = new Dictionary<int, Table>()
-  dict.Add(1, {Number = 1; Waiter = "X"; Status = Open(new Guid("2a964d85-f503-40a1-8014-2c8ee5ac4a49"))})
+  dict.Add(1, {Number = 1; Waiter = "X"; Status = Closed})
   dict.Add(2, {Number = 2; Waiter = "y"; Status = Closed})
   dict.Add(3, {Number = 3; Waiter = "Z"; Status = Closed})
   dict

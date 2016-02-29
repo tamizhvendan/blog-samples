@@ -3,18 +3,44 @@ module CommandApiHandlers
 open Domain
 open Data
 open Suave.RequestErrors
+open Suave.ServerErrors
 open CommandRequests
 open Suave.Successful
+open Aggregates
+open ReadModel
+open Handlers
+open EventsStore
+open Commands
+open Chessie.ErrorHandling
+
+let eventStore = getState InMemoryEventStore.Instance
+let saveEvent = saveEvent InMemoryEventStore.Instance
+
+let handleCommand state command =
+  match evolve state command with
+  | Ok(result,_) ->
+    match saveEvent result with
+    | Ok(result,_) ->
+        match dispatchEvent result with
+        | Ok(result,_) ->
+          OK <| sprintf "%A" result
+        | Bad err -> BAD_REQUEST <| sprintf "%A" err
+    | Bad err -> BAD_REQUEST <| sprintf "%A" err
+  | Bad err -> BAD_REQUEST <| sprintf "%A" err
+
 
 let handleOpenTab tab  =
   let table = getTableByNumber tab.TableNumber
   match table with
   | Some t ->
     match t.Status with
-    | Closed -> OK <| sprintf "%A" tab
+    | Closed ->
+      match eventStore tab.Id with
+      | Ok (state,_) -> handleCommand state (OpenTab tab)
+      | Bad _ -> INTERNAL_ERROR "Unable to retrieve events from event store"
     | Open tabId ->
       BAD_REQUEST
-      <| sprintf "Table Number %d is opened by tabID %A" tab.TableNumber tab.Id
+      <| sprintf "Table Number %d is opened by tabID %A" tab.TableNumber tabId
   | None ->
     BAD_REQUEST "Invalid Table Number"
 

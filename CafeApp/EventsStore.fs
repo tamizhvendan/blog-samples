@@ -35,7 +35,7 @@ let saveEvent (eventStore : IStoreEvents) (state,event) =
   | None ->
       InvalidStateForSavingEvent |> fail
 
-let getState (eventStore : IStoreEvents) tabId =
+let getState (eventStore : IStoreEvents) (tabId : System.Guid) =
   try
     use stream = eventStore.OpenStream (tabId.ToString())
     stream.CommittedEvents
