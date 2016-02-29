@@ -12,6 +12,11 @@ type Table = {
   Status : TabStatus
 }
 
+type ChefTodo = {
+  TabId : Guid
+  FoodItems : FoodItem list
+}
+
 let private tables =
   let dict = new Dictionary<int, Table>()
   dict.Add(1, {Number = 1; Waiter = "X"; Status = Closed})
@@ -36,7 +41,14 @@ let getTableByNumber tableNumber =
   else
     None
 
-let getTables () = tables.Values |> Seq.toList;
+let getTables () = tables.Values |> Seq.toList
+
+let private chefToDos =
+  let dict = new Dictionary<Guid, ChefTodo>()
+  dict
+
+let addChefTodo chefTodo = chefToDos.Add(chefTodo.TabId, chefTodo)
+let getChefTodos () = chefToDos.Values |> Seq.toList
 
 let private foodItems =
   let dict = new Dictionary<int, FoodItem>()

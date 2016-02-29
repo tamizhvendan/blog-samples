@@ -1,10 +1,11 @@
 module Commands
 open Domain
+open System
 
 type Command =
   | OpenTab of Tab
-  | PlaceOrder of PlacedOrder
-  | ServeDrinks of DrinksItem
-  | PrepareFood of FoodItem
-  | ServeFood of FoodItem
+  | PlaceOrder of Order
+  | ServeDrinks of DrinksItem * Guid
+  | PrepareFood of FoodItem * Guid
+  | ServeFood of FoodItem * Guid
   | CloseTab of Payment

@@ -16,7 +16,7 @@ let placedOrderAmount po =
 
 type Event =
   | TabOpened of Tab
-  | OrderPlaced of PlacedOrder
+  | OrderPlaced of Order
   | DrinksServed of DrinksItem
   | FoodPrepared of PreparedFood
   | FoodServed of FoodItem

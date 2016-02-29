@@ -4,16 +4,17 @@ open Domain
 open Events
 open Data
 
+
+
 let projectReadModel e =
   match e with
   | TabOpened tab ->
       updateTableStatus tab.TableNumber (Open tab.Id)
-  | OrderPlaced placedOrder ->
-      //{
-      //  Tab = placedOrder.Tab
-      //  FoodItems = placedOrder.FoodItems
-      //} |> ignore
-      ()
+  | OrderPlaced order ->
+      {
+        TabId = order.TabId
+        FoodItems = order.FoodItems
+      } |> addChefTodo
   | FoodPrepared pf ->
       pf |> ignore
   | TabClosed payment ->

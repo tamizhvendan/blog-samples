@@ -9,15 +9,18 @@ open Data
 open Domain
 open System.Text
 open CommandApiHandlers
+open ReadModelApi
 
 
-let commandHandler (request : HttpRequest) =
+let commandHandler eventStore (request : HttpRequest) =
   match Encoding.UTF8.GetString request.rawForm with
-  | OpenTabRequest tab -> handleOpenTab tab
-  | PlaceOrderRequest placeOrder -> handlePlaceOrder placeOrder
+  | OpenTabRequest tab -> handleOpenTab eventStore tab
+  | PlaceOrderRequest placeOrder -> handlePlaceOrder eventStore placeOrder
   | _ -> BAD_REQUEST "Invalid Command Payload"
 
-let api =
+let api eventStore =
   choose [
-    POST >=> path "/command" >=> request commandHandler
+    POST >=> path "/command" >=> request (commandHandler eventStore)
+    GET >=> path "/tables" >=> getTables
+    GET >=> path "/cheftodos" >=> getChefTodos
   ]

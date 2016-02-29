@@ -20,7 +20,7 @@ type Payment = {
   Amount : decimal
 }
 
-type PlacedOrder = {
+type Order = {
   FoodItems : FoodItem list
   DrinksItems : DrinksItem list
   TabId : Guid

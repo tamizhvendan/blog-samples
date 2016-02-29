@@ -12,60 +12,38 @@ open Handlers
 open EventsStore
 open Commands
 open Chessie.ErrorHandling
+open CommandValidations
 
-let eventStore = getState InMemoryEventStore.Instance
-let saveEvent = saveEvent InMemoryEventStore.Instance
+let getTabIdFromCommand = function
+| OpenTab tab -> tab.Id
+| PlaceOrder order -> order.TabId
+| ServeDrinks (item, tabId) -> tabId
+| PrepareFood (item, tabId) -> tabId
+| ServeFood (item, tabId) -> tabId
+| CloseTab payment -> payment.Tab.Id
 
-let handleCommand state command =
-  match evolve state command with
-  | Ok(result,_) ->
-    match saveEvent result with
-    | Ok(result,_) ->
-        match dispatchEvent result with
-        | Ok(result,_) ->
-          OK <| sprintf "%A" result
-        | Bad err -> BAD_REQUEST <| sprintf "%A" err
+let handleCommand eventStore command =
+  match eventStore.GetState (getTabIdFromCommand command) with
+  | Ok(state, _) ->
+    let result =
+      evolve state command
+      >>= eventStore.SaveEvent
+      >>= dispatchEvent
+    match result with
+    | Ok((state, event),_) ->
+      OK <| sprintf "State : %A, Event : %A" state event
     | Bad err -> BAD_REQUEST <| sprintf "%A" err
-  | Bad err -> BAD_REQUEST <| sprintf "%A" err
+  | Bad _ -> INTERNAL_ERROR "Unable to retrieve events from event store"
 
 
-let handleOpenTab tab  =
-  let table = getTableByNumber tab.TableNumber
-  match table with
-  | Some t ->
-    match t.Status with
-    | Closed ->
-      match eventStore tab.Id with
-      | Ok (state,_) -> handleCommand state (OpenTab tab)
-      | Bad _ -> INTERNAL_ERROR "Unable to retrieve events from event store"
-    | Open tabId ->
-      BAD_REQUEST
-      <| sprintf "Table Number %d is opened by tabID %A" tab.TableNumber tabId
-  | None ->
-    BAD_REQUEST "Invalid Table Number"
+let handleOpenTab eventStore tab  =
+  match validateOpenTab tab with
+  | Choice1Of2(_) -> handleCommand eventStore (OpenTab tab)
+  | Choice2Of2 err -> BAD_REQUEST err
 
-let handlePlaceOrder (placeOrder : PlaceOrderReq.PlaceOrder) =
-  let table = getTableByTabId placeOrder.TabId
-  let isEmptyOrder =
-    Array.isEmpty placeOrder.Drinks && Array.isEmpty placeOrder.Foods
-  match table, isEmptyOrder with
-  | Some (t), false ->
-    let foodItems = getFoodItems placeOrder.Foods
-    let drinksItems = getDrinksItems placeOrder.Drinks
-    match foodItems, drinksItems with
-    | Choice1Of2 foods, Choice1Of2 drinks ->
-      {
-        TabId = placeOrder.TabId
-        DrinksItems = drinks
-        FoodItems = foods
-      } |> sprintf "%A" |> OK
-    | Choice2Of2 fkeys, Choice2Of2 dkeys ->
-        let msg =
-          sprintf "Invalid Food Keys : %A,Invalid Drinks Keys %A" fkeys dkeys
-        BAD_REQUEST msg
-    | Choice2Of2 keys, _ ->
-        BAD_REQUEST <| sprintf "Invalid Food Keys : %A" keys
-    | _, Choice2Of2 keys ->
-        BAD_REQUEST <| sprintf "Invalid Drinks Keys : %A" keys
-  | _,true -> BAD_REQUEST "Order Should Contain atleast 1 food or drinks"
-  | None,_ -> BAD_REQUEST "Invalid Tab Id"
+let handlePlaceOrder eventStore (placeOrder : PlaceOrderReq.PlaceOrder) =
+  let foodItems = getFoodItems placeOrder.Foods
+  let drinksItems = getDrinksItems placeOrder.Drinks
+  match validatePlaceOrder placeOrder.TabId drinksItems foodItems with
+  | Choice1Of2 order -> handleCommand eventStore (PlaceOrder order)
+  | Choice2Of2 err -> BAD_REQUEST err

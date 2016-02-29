@@ -4,7 +4,7 @@ open Domain
 open System
 
 type InProgressOrder = {
-  PlacedOrder : PlacedOrder
+  PlacedOrder : Order
   ServedDrinks : DrinksItem list
   ServedFoods : FoodItem list
   PreparedFoods : FoodItem list
@@ -22,9 +22,9 @@ with
 type State =
   | ClosedTab
   | OpenedTab of Tab
-  | PlacedOrder of PlacedOrder
+  | PlacedOrder of Order
   | OrderInProgress of InProgressOrder
-  | OrderServed of PlacedOrder
+  | OrderServed of Order
 
 let getState (ipo : InProgressOrder) =
   if ipo.IsOrderServed then
