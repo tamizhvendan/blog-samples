@@ -25,12 +25,11 @@ let projectReadModel e =
   | FoodPrepared (item, tabId) ->
       removeFoodFromChefToDo item tabId
       addFoodToWaiterToDo item tabId
+  | FoodServed (item, tabId) ->
+      removeFoodFromWaiterToDo item tabId
   | TabClosed payment ->
       updateTableStatus payment.Tab.TableNumber Closed
-  | _ -> ()
-
-
-
+      
 let dispatchEvent e =
   projectReadModel (snd e)
   e |> ok

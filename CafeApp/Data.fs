@@ -57,6 +57,12 @@ let removeDrinksFromWaiterToDo item tabId =
     { todo with
         DrinksItem = List.filter (fun d -> d <> item) todo.DrinksItem }
   waiterToDos.[tabId] <- waiterToDo
+let removeFoodFromWaiterToDo item tabId =
+  let todo = waiterToDos.[tabId]
+  let waiterToDo =
+    { todo with
+        FoodItems = List.filter (fun d -> d <> item) todo.FoodItems }
+  waiterToDos.[tabId] <- waiterToDo
 
 let private foodItems =
   let dict = new Dictionary<int, FoodItem>()
