@@ -22,5 +22,6 @@ let api eventStore =
   choose [
     POST >=> path "/command" >=> request (commandHandler eventStore)
     GET >=> path "/tables" >=> getTables
-    GET >=> path "/cheftodos" >=> getChefTodos
+    GET >=> path "/todo/chef" >=> getChefToDos
+    GET >=> path "/todo/waiter" >=> getWaiterToDos
   ]

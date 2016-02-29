@@ -12,9 +12,14 @@ let projectReadModel e =
       updateTableStatus tab.TableNumber (Open tab.Id)
   | OrderPlaced order ->
       {
-        TabId = order.TabId
+        ChefToDo.TabId = order.TabId
         FoodItems = order.FoodItems
-      } |> addChefTodo
+      } |> addChefToDo
+      {
+        TabId = order.TabId
+        DrinksItem = order.DrinksItems
+        FoodItems = []
+      } |> addWaiterToDo
   | FoodPrepared pf ->
       pf |> ignore
   | TabClosed payment ->

@@ -12,9 +12,15 @@ type Table = {
   Status : TabStatus
 }
 
-type ChefTodo = {
+type ChefToDo = {
   TabId : Guid
   FoodItems : FoodItem list
+}
+
+type WaiterToDo = {
+  TabId : Guid
+  FoodItems : FoodItem list
+  DrinksItem : DrinksItem list
 }
 
 let private tables =
@@ -43,12 +49,16 @@ let getTableByNumber tableNumber =
 
 let getTables () = tables.Values |> Seq.toList
 
-let private chefToDos =
-  let dict = new Dictionary<Guid, ChefTodo>()
-  dict
+let private chefToDos = new Dictionary<Guid, ChefToDo>()
+let addChefToDo (chefTodo : ChefToDo) =
+  chefToDos.Add(chefTodo.TabId, chefTodo)
+let getChefToDos () = chefToDos.Values |> Seq.toList
 
-let addChefTodo chefTodo = chefToDos.Add(chefTodo.TabId, chefTodo)
-let getChefTodos () = chefToDos.Values |> Seq.toList
+let private waiterToDos = new Dictionary<Guid, WaiterToDo>()
+let addWaiterToDo (waiterToDo : WaiterToDo)  =
+  waiterToDos.Add(waiterToDo.TabId, waiterToDo)
+let getWaiterToDos () =
+  waiterToDos.Values |> Seq.toList
 
 let private foodItems =
   let dict = new Dictionary<int, FoodItem>()
