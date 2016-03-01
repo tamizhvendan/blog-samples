@@ -58,12 +58,12 @@ type Table = {
 }
 
 type ChefToDo = {
-  TabId : Guid
+  Tab : Tab
   FoodItems : FoodItem list
 }
 
 type WaiterToDo = {
-  TabId : Guid
+  Tab : Tab
   FoodItems : FoodItem list
-  DrinksItem : DrinksItem list
+  DrinksItems : DrinksItem list
 }

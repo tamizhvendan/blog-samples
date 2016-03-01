@@ -11,15 +11,8 @@ let projectReadModel e =
   | TabOpened tab ->
       updateTableStatus tab.TableNumber (Open tab.Id)
   | OrderPlaced order ->
-      {
-        ChefToDo.TabId = order.TabId
-        FoodItems = order.FoodItems
-      } |> addChefToDo
-      {
-        TabId = order.TabId
-        DrinksItem = order.DrinksItems
-        FoodItems = []
-      } |> addWaiterToDo
+      addChefToDo order.TabId order.FoodItems
+      addWaiterToDo order.TabId order.DrinksItems
       addCashierToDo order.TabId (orderAmount order)
   | DrinksServed (item,tabId) ->
       removeDrinksFromWaiterToDo item tabId

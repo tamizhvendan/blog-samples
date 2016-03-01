@@ -32,8 +32,15 @@ let getTableByNumber = getItem tables
 let getTables () = tables.Values |> Seq.toList
 
 let private chefToDos = new Dictionary<Guid, ChefToDo>()
-let addChefToDo (chefTodo : ChefToDo) =
-  chefToDos.Add(chefTodo.TabId, chefTodo)
+
+let addChefToDo tabId foodItems =
+  match getTableByTabId tabId with
+  | Some table ->
+    let todo : ChefToDo  =
+      {Tab = {Id = tabId; TableNumber = table.Number}; FoodItems = foodItems}
+    chefToDos.Add(tabId, todo)
+  | None -> ()
+
 let removeChefToDo tabId = chefToDos.Remove(tabId) |> ignore
 let getChefToDos () = chefToDos.Values |> Seq.toList
 let removeFoodFromChefToDo item tabId =
@@ -44,8 +51,15 @@ let removeFoodFromChefToDo item tabId =
 
 let private waiterToDos = new Dictionary<Guid, WaiterToDo>()
 
-let addWaiterToDo (waiterToDo : WaiterToDo)  =
-  waiterToDos.Add(waiterToDo.TabId, waiterToDo)
+let addWaiterToDo tabId drinksItem =
+  match getTableByTabId tabId with
+  | Some table ->
+    let todo : WaiterToDo  =
+      { Tab = {Id = tabId; TableNumber = table.Number}
+        FoodItems = []
+        DrinksItems = drinksItem}
+    waiterToDos.Add(tabId, todo)
+  | None -> ()
 
 let addFoodToWaiterToDo item tabId =
   let todo = waiterToDos.[tabId]
@@ -59,7 +73,7 @@ let removeDrinksFromWaiterToDo item tabId =
   let todo = waiterToDos.[tabId]
   let waiterToDo =
     { todo with
-        DrinksItem = List.filter (fun d -> d <> item) todo.DrinksItem }
+        DrinksItems = List.filter (fun d -> d <> item) todo.DrinksItems }
   waiterToDos.[tabId] <- waiterToDo
 
 let removeFoodFromWaiterToDo item tabId =

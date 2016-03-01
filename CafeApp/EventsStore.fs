@@ -10,6 +10,7 @@ open System
 
 type EventStore = {
   GetState : Guid -> Result<State, Error>
+  GetEvents : Guid -> Result<Event seq, Error>
   SaveEvent : State * Event -> Result<State * Event, Error>
 }
 let saveEvent (eventStore : IStoreEvents) (state,event) =
@@ -32,16 +33,23 @@ let saveEvent (eventStore : IStoreEvents) (state,event) =
   | None ->
       InvalidStateForSavingEvent |> fail
 
-let getState (eventStore : IStoreEvents) (tabId : System.Guid) =
+let getEvents (eventStore : IStoreEvents) (tabId : System.Guid) =
   try
     use stream = eventStore.OpenStream (tabId.ToString())
     stream.CommittedEvents
     |> Seq.map (fun msg -> msg.Body)
     |> Seq.cast<Event>
-    |> Seq.fold apply (ClosedTab None)
     |> ok
   with
     | ex -> ErrorWhileRetrievingEvents ex |> fail
+
+let getState (eventStore : IStoreEvents) (tabId : System.Guid) =
+  match getEvents eventStore tabId with
+  | Ok (events,_) ->
+    events
+    |> Seq.fold apply (ClosedTab None)
+    |> ok
+  | Bad x -> Bad x
 
 type InMemoryEventStore () =
   static member Instance =
@@ -54,4 +62,5 @@ let inMemoryEventStore =
   {
       SaveEvent = saveEvent instance
       GetState = getState instance
+      GetEvents = getEvents instance
   }
