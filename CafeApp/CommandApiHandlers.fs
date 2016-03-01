@@ -4,7 +4,6 @@ open Domain
 open Data
 open Suave.RequestErrors
 open Suave.ServerErrors
-
 open Suave.Successful
 open Aggregates
 open ReadModel
@@ -13,6 +12,7 @@ open EventsStore
 open Commands
 open Chessie.ErrorHandling
 open CommandValidations
+open JsonResponse
 
 let getTabIdFromCommand = function
 | OpenTab tab -> tab.Id
@@ -32,15 +32,15 @@ let handleCommand eventStore command =
     match result with
     | Ok((state, event),_) ->
       OK <| sprintf "State : %A, Event : %A" state event
-    | Bad err -> BAD_REQUEST <| sprintf "%A" err
-  | Bad _ -> INTERNAL_ERROR "Unable to retrieve events from event store"
-
+    | Bad err -> err.Head |> Errors.toErrorString |> toRequestErrorJson
+  | Bad _ ->
+    "Unable to retrieve events from event store" |> toInternalErrorJson
 
 let handleOpenTab eventStore tab  =
   let table = getTableByNumber tab.TableNumber
   match validateOpenTab table tab with
   | Choice1Of2(_) -> handleCommand eventStore (OpenTab tab)
-  | Choice2Of2 err -> BAD_REQUEST err
+  | Choice2Of2 err -> toRequestErrorJson err
 
 let handlePlaceOrder
     eventStore (tabId, drinksMenuNumbers, foodMenuNumbers) =
@@ -57,7 +57,7 @@ let handlePlaceOrder
     }
     |> PlaceOrder
     |> handleCommand eventStore
-  | Choice2Of2 err -> BAD_REQUEST err
+  | Choice2Of2 err -> toRequestErrorJson err
 
 let handleItem eventStore getItemByMenuNumber msg (tabId, menuNumber) cmd =
     let table = getTableByTabId tabId
@@ -67,7 +67,7 @@ let handleItem eventStore getItemByMenuNumber msg (tabId, menuNumber) cmd =
       (food,tabId)
       |> cmd
       |> handleCommand eventStore
-    | Choice2Of2 err -> BAD_REQUEST err
+    | Choice2Of2 err -> toRequestErrorJson err
 
 let handleCloseTab eventStore (tabId, amount) =
   let table = getTableByTabId tabId
@@ -76,4 +76,4 @@ let handleCloseTab eventStore (tabId, amount) =
     {Amount = amount; Tab = {Id = tabId; TableNumber = tableNumber}}
     |> CloseTab
     |> handleCommand eventStore
-  | Choice2Of2 err -> BAD_REQUEST err
+  | Choice2Of2 err -> toRequestErrorJson err

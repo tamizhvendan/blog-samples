@@ -14,6 +14,7 @@ open ReadModelApi
 open Commands
 open Chessie.ErrorHandling
 open EventsStore
+open JsonResponse
 
 let commandHandler eventStore (request : HttpRequest) =
 
@@ -32,7 +33,7 @@ let commandHandler eventStore (request : HttpRequest) =
   | PrepareFoodRequest prepareFood -> handleFoodItem prepareFood PrepareFood
   | ServeFoodRequest serveFood -> handleFoodItem serveFood ServeFood
   | CloseTabRequest closeTab -> handleCloseTab eventStore closeTab
-  | _ -> BAD_REQUEST "Invalid Command Payload"
+  | _ -> toRequestErrorJson "Invalid Command Payload"
 
 let getState eventStore tabId =
   match System.Guid.TryParse(tabId) with
@@ -40,7 +41,7 @@ let getState eventStore tabId =
       match eventStore.GetState tabId with
       | Ok(state,_) -> OK <| sprintf "%A" state
       | Bad(err) -> INTERNAL_ERROR <| sprintf "%A" err
-  | _ -> BAD_REQUEST "Invalid Tab Id"
+  | _ -> toRequestErrorJson "Invalid Tab Id"
 
 let getEvents eventStore tabId =
   match System.Guid.TryParse(tabId) with
@@ -48,7 +49,7 @@ let getEvents eventStore tabId =
       match eventStore.GetEvents tabId with
       | Ok(events,_) -> OK <| sprintf "%A" events
       | Bad(err) -> INTERNAL_ERROR <| sprintf "%A" err
-  | _ -> BAD_REQUEST "Invalid Tab Id"
+  | _ -> toRequestErrorJson "Invalid Tab Id"
 
 let api eventStore =
   choose [

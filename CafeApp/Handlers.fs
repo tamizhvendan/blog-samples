@@ -23,13 +23,13 @@ let handleServeDrinks item tabId state =
       let orderedDrinks = order.DrinksItems
       match List.contains item orderedDrinks with
       | true -> DrinksServed (item, tabId) |> ok
-      | false -> (item, orderedDrinks) |> ServingNonOrderedDrinks |> fail
+      | false -> item |> ServingNonOrderedDrinks |> fail
   | OrderInProgress ipo ->
       match List.contains item ipo.NonServedDrinks with
       | true -> DrinksServed (item, tabId) |> ok
-      | false -> (item, ipo.NonServedDrinks) |> ServingNonOrderedDrinks |> fail
+      | false -> item |> ServingNonOrderedDrinks |> fail
   | OrderServed _ -> OrderAlreadyServed |> fail
-  | OpenedTab _ -> CanNotServeForNonPlacedOrder |> fail
+  | OpenedTab _ -> item |> CanNotServeForNonOrderedDrinksItem |> fail
   | ClosedTab _ -> CanNotServeWithClosedTab |> fail
 
 let handlePrepareFood item tabId state =
@@ -38,17 +38,16 @@ let handlePrepareFood item tabId state =
       let orderedFoods = order.FoodItems
       match List.contains item orderedFoods with
       | true -> (item, tabId) |> FoodPrepared |> ok
-      | false -> (item, orderedFoods) |> CanNotPrepareNotOrderedFoods |> fail
+      | false -> item |> CanNotPrepareNotOrderedFoods |> fail
   | OrderInProgress ipo ->
       match List.contains item ipo.PreparedFoods with
-      | true -> FoodAlreadyPrepared |> fail
+      | true -> item |> FoodAlreadyPrepared |> fail
       | false ->
         match List.contains item ipo.NonPreparedFoods with
         | true ->  (item, tabId) |> FoodPrepared |> ok
-        | false ->
-          (item, ipo.NonPreparedFoods) |> CanNotPrepareNotOrderedFoods |> fail
+        | false -> item |> CanNotPrepareNotOrderedFoods |> fail
   | OrderServed _ -> OrderAlreadyServed |> fail
-  | OpenedTab _ -> CanNotPrepareForNonPlacedOrder |> fail
+  | OpenedTab _ -> item |> CanNotPrepareForNonPlacedOrder |> fail
   | ClosedTab _ -> CanNotPrepareWithClosedTab |> fail
 
 let handleServeFood item tabId state =
@@ -58,12 +57,11 @@ let handleServeFood item tabId state =
         | true -> (item, tabId) |> FoodServed  |> ok
         | false ->
           match List.contains item ipo.NonPreparedFoods with
-          | true -> CanNotServeNonPreparedFood |> fail
-          | false ->
-            (item, ipo.NonPreparedFoods) |> ServingNonOrderedFood |> fail
-    | PlacedOrder _ -> CanNotServeNonPreparedFood |> fail
+          | true -> item |> CanNotServeNonPreparedFood |> fail
+          | false -> item |> ServingNonOrderedFood |> fail
+    | PlacedOrder _ -> item |> CanNotServeNonPreparedFood |> fail
     | OrderServed _ -> OrderAlreadyServed |> fail
-    | OpenedTab _ -> CanNotServeForNonPlacedOrder |> fail
+    | OpenedTab _ -> item |> CanNotServeForNonOrderedFoodItem |> fail
     | ClosedTab _ -> CanNotServeWithClosedTab |> fail
 
 let handleCloseTab payment state =

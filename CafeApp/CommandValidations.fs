@@ -7,7 +7,7 @@ let validateOpenTab table tab =
     match t.Status with
     | Closed -> Choice1Of2(tab)
     | Open tabId ->
-      sprintf "Table Number %d is opened by tabID %A" tab.TableNumber tabId
+      sprintf "Table Number %d is already opened" tab.TableNumber
       |> Choice2Of2
   | None -> "Invalid Table Number" |> Choice2Of2
 
@@ -29,7 +29,7 @@ let validatePlaceOrder table drinksItems foodItems =
       else
         (drinks, foods) |> Choice1Of2
     | Choice2Of2 fkeys, Choice2Of2 dkeys ->
-        sprintf "Invalid Food Keys : %A,Invalid Drinks Keys %A" fkeys dkeys
+        sprintf "Invalid Food Keys : %A, Invalid Drinks Keys %A" fkeys dkeys
         |> Choice2Of2
     | Choice2Of2 keys, _ ->
       sprintf "Invalid Food Keys : %A" keys |> Choice2Of2
