@@ -20,6 +20,7 @@ let projectReadModel e =
         DrinksItem = order.DrinksItems
         FoodItems = []
       } |> addWaiterToDo
+      addCashierToDo order.TabId (orderAmount order)
   | DrinksServed (item,tabId) ->
       removeDrinksFromWaiterToDo item tabId
   | FoodPrepared (item, tabId) ->
@@ -29,7 +30,10 @@ let projectReadModel e =
       removeFoodFromWaiterToDo item tabId
   | TabClosed payment ->
       updateTableStatus payment.Tab.TableNumber Closed
-      
+      removeCashierToDo payment.Tab.Id
+      removeChefToDo payment.Tab.Id
+      removeWaiterToDo payment.Tab.Id
+
 let dispatchEvent e =
   projectReadModel (snd e)
   e |> ok

@@ -3,24 +3,8 @@ open Events
 open Domain
 open System
 
-type InProgressOrder = {
-  PlacedOrder : Order
-  ServedDrinks : DrinksItem list
-  ServedFoods : FoodItem list
-  PreparedFoods : FoodItem list
-}
-with
-    member this.NonServedDrinks =
-      List.except this.ServedDrinks this.PlacedOrder.DrinksItems
-    member this.NonServedFoods =
-      List.except this.ServedFoods this.PlacedOrder.FoodItems
-    member this.NonPreparedFoods =
-      List.except this.PreparedFoods this.PlacedOrder.FoodItems
-    member this.IsOrderServed =
-      List.isEmpty this.NonServedFoods && List.isEmpty this.NonServedDrinks
-
 type State =
-  | ClosedTab
+  | ClosedTab of Guid option
   | OpenedTab of Tab
   | PlacedOrder of Order
   | OrderInProgress of InProgressOrder
@@ -34,7 +18,7 @@ let getState (ipo : InProgressOrder) =
 
 let apply state event  =
   match state, event  with
-  | ClosedTab, TabOpened tab -> OpenedTab tab
+  | ClosedTab _, TabOpened tab -> OpenedTab tab
   | OpenedTab _, OrderPlaced placeOrder -> PlacedOrder placeOrder
   | PlacedOrder placedOrder, DrinksServed (item,_) ->
       match List.contains item placedOrder.DrinksItems with
@@ -76,5 +60,5 @@ let apply state event  =
           {ipo with ServedFoods = food :: ipo.ServedFoods}
           |> getState
       | _ -> OrderInProgress ipo
-  | OrderServed _, TabClosed _ -> ClosedTab
+  | OrderServed order, TabClosed _ -> ClosedTab (Some order.TabId)
   | _ -> state

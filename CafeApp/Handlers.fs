@@ -8,13 +8,13 @@ open Aggregates
 open Errors
 
 let handleOpenTab tab = function
-  | ClosedTab -> TabOpened tab |> ok
+  | ClosedTab _ -> TabOpened tab |> ok
   | _ -> fail TabAlreadyOpened
 
 let handlePlaceOrder placedOrder state =
   match state with
   | OpenedTab _ -> placedOrder |> OrderPlaced |> ok
-  | ClosedTab -> fail CanNotOrderWithClosedTab
+  | ClosedTab _ -> fail CanNotOrderWithClosedTab
   | _ -> fail OrderAlreadyPlaced
 
 let handleServeDrinks item tabId state =
@@ -30,7 +30,7 @@ let handleServeDrinks item tabId state =
       | false -> (item, ipo.NonServedDrinks) |> ServingNonOrderedDrinks |> fail
   | OrderServed _ -> OrderAlreadyServed |> fail
   | OpenedTab _ -> CanNotServeForNonPlacedOrder |> fail
-  | ClosedTab -> CanNotServeWithClosedTab |> fail
+  | ClosedTab _ -> CanNotServeWithClosedTab |> fail
 
 let handlePrepareFood item tabId state =
   match state with
@@ -43,13 +43,13 @@ let handlePrepareFood item tabId state =
       match List.contains item ipo.PreparedFoods with
       | true -> FoodAlreadyPrepared |> fail
       | false ->
-        match List.contains item ipo.NonServedFoods with
+        match List.contains item ipo.NonPreparedFoods with
         | true ->  (item, tabId) |> FoodPrepared |> ok
         | false ->
-          (item, ipo.NonServedFoods) |> CanNotPrepareNotOrderedFoods |> fail
+          (item, ipo.NonPreparedFoods) |> CanNotPrepareNotOrderedFoods |> fail
   | OrderServed _ -> OrderAlreadyServed |> fail
   | OpenedTab _ -> CanNotPrepareForNonPlacedOrder |> fail
-  | ClosedTab -> CanNotPrepareWithClosedTab |> fail
+  | ClosedTab _ -> CanNotPrepareWithClosedTab |> fail
 
 let handleServeFood item tabId state =
     match state with
@@ -57,19 +57,19 @@ let handleServeFood item tabId state =
         match List.contains item ipo.PreparedFoods with
         | true -> (item, tabId) |> FoodServed  |> ok
         | false ->
-          match List.contains item ipo.NonServedFoods with
+          match List.contains item ipo.NonPreparedFoods with
           | true -> CanNotServeNonPreparedFood |> fail
           | false ->
-            (item, ipo.NonServedFoods) |> ServingNonOrderedFood |> fail
+            (item, ipo.NonPreparedFoods) |> ServingNonOrderedFood |> fail
     | PlacedOrder _ -> CanNotServeNonPreparedFood |> fail
     | OrderServed _ -> OrderAlreadyServed |> fail
     | OpenedTab _ -> CanNotServeForNonPlacedOrder |> fail
-    | ClosedTab -> CanNotServeWithClosedTab |> fail
+    | ClosedTab _ -> CanNotServeWithClosedTab |> fail
 
 let handleCloseTab payment state =
   match state with
-  | OrderServed po ->
-      let totalAmount = placedOrderAmount po
+  | OrderServed order ->
+      let totalAmount = orderAmount order
       match totalAmount = payment.Amount with
       | true -> TabClosed payment |> ok
       | false ->

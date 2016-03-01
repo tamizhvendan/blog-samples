@@ -11,6 +11,14 @@ let validateOpenTab table tab =
       |> Choice2Of2
   | None -> "Invalid Table Number" |> Choice2Of2
 
+let validateCloseTab table =
+  match table with
+  | Some t ->
+    match t.Status with
+    | Open tabId -> (t.Number, tabId) |> Choice1Of2
+    | Closed -> "Invalid Request. Table is closed" |> Choice2Of2
+  | None -> "Invalid Tab Id" |> Choice2Of2
+
 let validatePlaceOrder table drinksItems foodItems =
   match table with
   | Some (t) ->

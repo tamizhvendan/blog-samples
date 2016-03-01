@@ -34,6 +34,7 @@ let getTables () = tables.Values |> Seq.toList
 let private chefToDos = new Dictionary<Guid, ChefToDo>()
 let addChefToDo (chefTodo : ChefToDo) =
   chefToDos.Add(chefTodo.TabId, chefTodo)
+let removeChefToDo tabId = chefToDos.Remove(tabId) |> ignore
 let getChefToDos () = chefToDos.Values |> Seq.toList
 let removeFoodFromChefToDo item tabId =
   let todo = chefToDos.[tabId]
@@ -42,27 +43,44 @@ let removeFoodFromChefToDo item tabId =
   chefToDos.[tabId] <- chefToDo
 
 let private waiterToDos = new Dictionary<Guid, WaiterToDo>()
+
 let addWaiterToDo (waiterToDo : WaiterToDo)  =
   waiterToDos.Add(waiterToDo.TabId, waiterToDo)
+
 let addFoodToWaiterToDo item tabId =
   let todo = waiterToDos.[tabId]
   let waiterToDo =
     {todo with FoodItems = item :: todo.FoodItems}
   waiterToDos.[tabId] <- waiterToDo
-let getWaiterToDos () =
-  waiterToDos.Values |> Seq.toList
+let removeWaiterToDo tabId = waiterToDos.Remove(tabId) |> ignore
+let getWaiterToDos () = waiterToDos.Values |> Seq.toList
+
 let removeDrinksFromWaiterToDo item tabId =
   let todo = waiterToDos.[tabId]
   let waiterToDo =
     { todo with
         DrinksItem = List.filter (fun d -> d <> item) todo.DrinksItem }
   waiterToDos.[tabId] <- waiterToDo
+
 let removeFoodFromWaiterToDo item tabId =
   let todo = waiterToDos.[tabId]
   let waiterToDo =
     { todo with
         FoodItems = List.filter (fun d -> d <> item) todo.FoodItems }
   waiterToDos.[tabId] <- waiterToDo
+
+let private cashierToDos = new Dictionary<Guid, Payment>()
+
+let addCashierToDo tabId amount =
+  match getTableByTabId tabId with
+  | Some table ->
+    let payment  =
+      {Tab = {Id = tabId; TableNumber = table.Number}; Amount = amount}
+    cashierToDos.Add(tabId, payment)
+  | None -> ()
+
+let removeCashierToDo tabId = cashierToDos.Remove(tabId) |> ignore
+let getCashierToDos () = cashierToDos.Values |> Seq.toList
 
 let private foodItems =
   let dict = new Dictionary<int, FoodItem>()

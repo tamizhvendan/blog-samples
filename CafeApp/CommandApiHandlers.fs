@@ -68,3 +68,12 @@ let handleItem eventStore getItemByMenuNumber msg (tabId, menuNumber) cmd =
       |> cmd
       |> handleCommand eventStore
     | Choice2Of2 err -> BAD_REQUEST err
+
+let handleCloseTab eventStore (tabId, amount) =
+  let table = getTableByTabId tabId
+  match validateCloseTab table with
+  | Choice1Of2 (tableNumber,tabId) ->
+    {Amount = amount; Tab = {Id = tabId; TableNumber = tableNumber}}
+    |> CloseTab
+    |> handleCommand eventStore
+  | Choice2Of2 err -> BAD_REQUEST err

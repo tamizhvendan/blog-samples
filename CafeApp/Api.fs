@@ -28,6 +28,7 @@ let commandHandler eventStore (request : HttpRequest) =
   | ServeDrinksRequest serveDrinks -> handleDrinksItem serveDrinks ServeDrinks
   | PrepareFoodRequest prepareFood -> handleFoodItem prepareFood PrepareFood
   | ServeFoodRequest serveFood -> handleFoodItem serveFood ServeFood
+  | CloseTabRequest closeTab -> handleCloseTab eventStore closeTab
   | _ -> BAD_REQUEST "Invalid Command Payload"
 
 let api eventStore =
@@ -36,4 +37,5 @@ let api eventStore =
     GET >=> path "/tables" >=> getTables
     GET >=> path "/todo/chef" >=> getChefToDos
     GET >=> path "/todo/waiter" >=> getWaiterToDos
+    GET >=> path "/todo/cashier" >=> getCashierToDos
   ]

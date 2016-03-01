@@ -14,11 +14,12 @@ type EventStore = {
 }
 let saveEvent (eventStore : IStoreEvents) (state,event) =
   let tabId = function
-    | ClosedTab -> None
+    | ClosedTab None -> None
     | OpenedTab tab -> Some tab.Id
     | PlacedOrder po -> Some po.TabId
     | OrderInProgress ipo -> Some ipo.PlacedOrder.TabId
     | OrderServed payment -> Some payment.TabId
+    | ClosedTab (Some tabId) -> Some tabId
   match tabId state with
   | Some id ->
       try
@@ -36,8 +37,8 @@ let getState (eventStore : IStoreEvents) (tabId : System.Guid) =
     use stream = eventStore.OpenStream (tabId.ToString())
     stream.CommittedEvents
     |> Seq.map (fun msg -> msg.Body)
-    |> Seq.cast<Event>    
-    |> Seq.fold apply ClosedTab
+    |> Seq.cast<Event>
+    |> Seq.fold apply (ClosedTab None)
     |> ok
   with
     | ex -> ErrorWhileRetrievingEvents ex |> fail

@@ -11,3 +11,6 @@ let getChefToDos =
 
 let getWaiterToDos =
   warbler (fun _ -> getWaiterToDos() |> sprintf "%A" |> OK)
+
+let getCashierToDos =
+  warbler (fun _ -> getCashierToDos() |> sprintf "%A" |> OK)
