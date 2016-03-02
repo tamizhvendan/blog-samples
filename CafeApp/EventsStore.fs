@@ -10,7 +10,7 @@ open System
 
 type EventStore = {
   GetState : Guid -> Result<State, Error>
-  GetEvents : Guid -> Result<Event seq, Error>
+  GetEvents : Guid -> Result<Event list, Error>
   SaveEvent : State * Event -> Result<State * Event, Error>
 }
 let saveEvent (eventStore : IStoreEvents) (state,event) =
@@ -39,6 +39,7 @@ let getEvents (eventStore : IStoreEvents) (tabId : System.Guid) =
     stream.CommittedEvents
     |> Seq.map (fun msg -> msg.Body)
     |> Seq.cast<Event>
+    |> Seq.toList
     |> ok
   with
     | ex -> ErrorWhileRetrievingEvents ex |> fail

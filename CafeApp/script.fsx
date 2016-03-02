@@ -1,11 +1,13 @@
 #r "packages/Chessie/lib/net40/Chessie.dll"
 #r "packages/FSharp.Data/lib/net40/FSharp.Data.dll"
+#r "packages/Newtonsoft.Json/lib/net45/Newtonsoft.Json.dll"
 #load "Domain.fs"
 #load "Commands.fs"
 #load "Events.fs"
 #load "Aggregates.fs"
 #load "Errors.fs"
 #load "Handlers.fs"
+#load "DomainExtensions.fs"
 
 open Domain
 open Events
@@ -16,6 +18,7 @@ open Commands
 open System
 open Chessie.ErrorHandling
 open FSharp.Data
+open DomainExtensions
 
 let coke = DrinksItem {
     MenuNumber = 10
@@ -42,12 +45,12 @@ let tab = {
   TableNumber = 1
 }
 
-let serveCoke = ServeDrinks coke
-let serveSalad = ServeFood salad
-let prepareSalad = PrepareFood salad
-let serveLemonade = ServeDrinks lemonade
-let servePizza = ServeFood pizza
-let preparePizza = PrepareFood pizza
+let serveCoke = ServeDrinks (coke, tab.Id)
+let serveSalad = ServeFood (salad, tab.Id)
+let prepareSalad = PrepareFood (salad, tab.Id)
+let serveLemonade = ServeDrinks (lemonade, tab.Id)
+let servePizza = ServeFood (pizza, tab.Id)
+let preparePizza = PrepareFood (pizza, tab.Id)
 let lift f m cmd =
   match m with
   | Ok((state,event),_) ->
@@ -69,12 +72,13 @@ let placeOrder = PlaceOrder {
 }
 let closeTab = {Tab = tab; Amount = 17.5m} |> CloseTab
 let commands =
-  [ OpenTab tab
-    placeOrder
-    serveCoke
-    prepareSalad
-    preparePizza
-    serveSalad
-    servePizza
-    closeTab]
-result ClosedTab commands
+  [ OpenTab tab]
+    //placeOrder
+    //serveCoke
+    //prepareSalad
+    //preparePizza
+    //serveSalad
+    //servePizza
+    //closeTab]
+let r = result (ClosedTab None) commands
+let state,_ = returnOrFail r

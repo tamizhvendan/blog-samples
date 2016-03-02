@@ -30,8 +30,7 @@ let handleCommand eventStore command =
       >>= eventStore.SaveEvent
       >>= dispatchEvent
     match result with
-    | Ok((state, event),_) ->
-      OK <| sprintf "State : %A, Event : %A" state event
+    | Ok((state, event),_) -> state |> toStateJson
     | Bad err -> err.Head |> Errors.toErrorString |> toRequestErrorJson
   | Bad _ ->
     "Unable to retrieve events from event store" |> toInternalErrorJson

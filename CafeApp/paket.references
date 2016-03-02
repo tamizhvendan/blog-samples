@@ -2,4 +2,4 @@ Suave
 NEventStore
 Chessie
 FSharp.Data
-Fleece.FSharpData
+Newtonsoft.Json

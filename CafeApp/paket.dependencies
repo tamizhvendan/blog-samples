@@ -4,4 +4,4 @@ nuget Suave
 nuget NEventStore
 nuget Chessie
 nuget FSharp.Data
-nuget Fleece.FSharpData
+nuget Newtonsoft.Json

@@ -15,6 +15,7 @@ open Commands
 open Chessie.ErrorHandling
 open EventsStore
 open JsonResponse
+open Errors
 
 let commandHandler eventStore (request : HttpRequest) =
 
@@ -39,16 +40,16 @@ let getState eventStore tabId =
   match System.Guid.TryParse(tabId) with
   | true, tabId ->
       match eventStore.GetState tabId with
-      | Ok(state,_) -> OK <| sprintf "%A" state
-      | Bad(err) -> INTERNAL_ERROR <| sprintf "%A" err
+      | Ok(state,_) -> toStateJson state
+      | Bad(err) -> err.Head |> toErrorString |> toInternalErrorJson
   | _ -> toRequestErrorJson "Invalid Tab Id"
 
 let getEvents eventStore tabId =
   match System.Guid.TryParse(tabId) with
   | true, tabId ->
       match eventStore.GetEvents tabId with
-      | Ok(events,_) -> OK <| sprintf "%A" events
-      | Bad(err) -> INTERNAL_ERROR <| sprintf "%A" err
+      | Ok(events,_) -> toEventsJson events
+      | Bad(err) -> err.Head |> toErrorString |> toInternalErrorJson
   | _ -> toRequestErrorJson "Invalid Tab Id"
 
 let api eventStore =
