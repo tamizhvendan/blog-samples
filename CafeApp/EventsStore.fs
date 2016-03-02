@@ -7,12 +7,15 @@ open Events
 open Aggregates
 open Errors
 open System
+open System.Reactive.Subjects
 
 type EventStore = {
   GetState : Guid -> Result<State, Error>
   GetEvents : Guid -> Result<Event list, Error>
   SaveEvent : State * Event -> Result<State * Event, Error>
+  EventStream : ISubject<Event>
 }
+
 let saveEvent (eventStore : IStoreEvents) (state,event) =
   let tabId = function
     | ClosedTab None -> None
@@ -64,4 +67,5 @@ let inMemoryEventStore =
       SaveEvent = saveEvent instance
       GetState = getState instance
       GetEvents = getEvents instance
+      EventStream = new Subject<Event>()
   }

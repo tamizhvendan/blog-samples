@@ -5,3 +5,4 @@ nuget NEventStore
 nuget Chessie
 nuget FSharp.Data
 nuget Newtonsoft.Json
+nuget Rx-Main

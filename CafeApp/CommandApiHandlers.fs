@@ -6,7 +6,7 @@ open Suave.RequestErrors
 open Suave.ServerErrors
 open Suave.Successful
 open Aggregates
-open ReadModel
+
 open Handlers
 open EventsStore
 open Commands
@@ -28,9 +28,10 @@ let handleCommand eventStore command =
     let result =
       evolve state command
       >>= eventStore.SaveEvent
-      >>= dispatchEvent
     match result with
-    | Ok((state, event),_) -> state |> toStateJson
+    | Ok((state, event),_) ->
+      eventStore.EventStream.OnNext(event)
+      state |> toStateJson
     | Bad err -> err.Head |> Errors.toErrorString |> toRequestErrorJson
   | Bad _ ->
     "Unable to retrieve events from event store" |> toInternalErrorJson
