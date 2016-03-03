@@ -5,6 +5,9 @@ open Suave.RequestErrors
 open Suave.ServerErrors
 open Suave.Operators
 open Suave.Filters
+open Suave.WebSocket
+open Suave.Sockets.Control
+open Suave.Sockets.SocketOp
 open CommandRequests
 open Data
 open Domain
@@ -16,6 +19,20 @@ open Chessie.ErrorHandling
 open EventsStore
 open JsonResponse
 open Errors
+open AsyncHelpers
+open Suave.Files
+
+let socketOfObservable eventStream (ws : WebSocket) cx = socket {
+  while true do
+    let! event =
+      eventStream
+      |> Async.AwaitObservable
+      |> ofAsync
+    let eventData =
+      event |> eventJObj |> string |> Encoding.UTF8.GetBytes
+    printfn "Sending Event : %A" event
+    do! ws.send Text eventData true
+}
 
 let commandHandler eventStore (request : HttpRequest) =
 
@@ -54,6 +71,8 @@ let getEvents eventStore tabId =
 
 let api eventStore =
   choose [
+    path "/websocket" >=> handShake (socketOfObservable eventStore.EventStream)
+    path "/" >=> file "index.html"
     POST >=> path "/command" >=> request (commandHandler eventStore)
     GET >=> path "/tables" >=> getTables
     GET >=> path "/todo/chef" >=> getChefToDos

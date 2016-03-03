@@ -140,6 +140,8 @@ let getDrinksItems = getItems drinksItems
 let getDrinksByMenuNumber = getItem drinksItems
 
 let projectReadModel e =
+  Threading.Thread.Sleep(5000)
+  printfn "Projecting Read Model"
   match e with
   | TabOpened tab ->
       updateTableStatus tab.TableNumber (Open tab.Id)

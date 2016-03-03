@@ -22,6 +22,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
+    <NoWarn>40</NoWarn>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\CafeApp.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
@@ -33,6 +34,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
+    <NoWarn>40</NoWarn>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Release\CafeApp.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
@@ -60,8 +62,12 @@
     <Compile Include="JsonResponse.fs" />
     <Compile Include="CommandApiHandlers.fs" />
     <Compile Include="ReadModelApi.fs" />
+    <Compile Include="AsyncHelpers.fs" />
     <Compile Include="Api.fs" />
     <Compile Include="Program.fs" />
+    <None Include="index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="App.config" />
   </ItemGroup>
   <PropertyGroup>

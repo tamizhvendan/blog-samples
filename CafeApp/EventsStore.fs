@@ -7,7 +7,12 @@ open Events
 open Aggregates
 open Errors
 open System
+open System.Reactive.Linq
 open System.Reactive.Subjects
+open System.Reactive.Concurrency
+
+let asyncSubject<'a> (subject: ISubject<'a>) =
+    subject.ObserveOn(Scheduler.Default)
 
 type EventStore = {
   GetState : Guid -> Result<State, Error>
