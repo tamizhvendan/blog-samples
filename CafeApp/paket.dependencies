@@ -1,8 +1,0 @@
-source https://www.nuget.org/api/v2
-
-nuget Suave
-nuget NEventStore
-nuget Chessie
-nuget FSharp.Data
-nuget Newtonsoft.Json
-nuget Rx-Main
