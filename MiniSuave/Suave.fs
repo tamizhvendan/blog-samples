@@ -32,20 +32,16 @@ module Succuessful =
 
 module Combinators =
 
-  let bind f asyncX = async {
-    let! x = asyncX
-    match x with
+  let compose first second x = async {
+    let! firstContext = first x
+    match firstContext with
     | None -> return None
-    | Some y ->
-      let z = f y
-      return! z
+    | Some context ->
+      let! secondContext = second context
+      return secondContext
   }
 
-  let compose first second x =
-    bind second (first x)
-
-  let (>=>) first second =
-    compose first second
+  let (>=>) = compose
 
 module Filters =
   open Http
