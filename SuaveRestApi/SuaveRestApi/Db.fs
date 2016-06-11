@@ -9,11 +9,11 @@ type Person = {
     Email : string
 }
 
-module Db =        
+module Db =
 
     let peopleStorage = new Dictionary<int, Person>()
-    let getPeople () = 
-        peopleStorage.Values |> Seq.map (fun p -> p)
+    let getPeople () =
+        peopleStorage.Values :> seq<Person>
     let getPerson id =
         if peopleStorage.ContainsKey(id) then
             Some peopleStorage.[id]
@@ -21,34 +21,23 @@ module Db =
             None
     let createPerson person =
         let id = peopleStorage.Values.Count + 1
-        let newPerson = {
-            Id = id
-            Name = person.Name
-            Age = person.Age
-            Email = person.Email
-        }
+        let newPerson = {person with Id = id}
         peopleStorage.Add(id, newPerson)
-        newPerson    
+        newPerson
 
     let updatePersonById personId personToBeUpdated =
         if peopleStorage.ContainsKey(personId) then
-            let updatedPerson = {
-                Id = personId
-                Name = personToBeUpdated.Name
-                Age = personToBeUpdated.Age
-                Email = personToBeUpdated.Email
-            }
+            let updatedPerson = {personToBeUpdated with Id = personId}
             peopleStorage.[personId] <- updatedPerson
-                
             Some updatedPerson
-        else 
+        else
             None
 
     let updatePerson personToBeUpdated =
-        updatePersonById personToBeUpdated.Id personToBeUpdated 
+        updatePersonById personToBeUpdated.Id personToBeUpdated
 
-    let deletePerson personId = 
+    let deletePerson personId =
         peopleStorage.Remove(personId) |> ignore
 
     let isPersonExists  = peopleStorage.ContainsKey
-        
+

@@ -21,7 +21,7 @@ module Http =
 
   type WebPart = Context -> Async<Context option>
 
-module Succuessful =
+module Successful =
   open Http
 
   let OK content context =

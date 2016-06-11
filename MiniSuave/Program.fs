@@ -1,7 +1,7 @@
 module MiniSuave
 open Suave.Http
 open Suave.Console
-open Suave.Succuessful
+open Suave.Successful
 open Suave.Combinators
 open Suave.Filters
 
