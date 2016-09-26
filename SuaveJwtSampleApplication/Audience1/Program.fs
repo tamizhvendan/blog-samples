@@ -1,7 +1,6 @@
 ﻿open Suave
 open Suave.Http
 open Suave.Web
-
 open Secure
 open Encodings
 open System.Security.Claims
