@@ -1,0 +1,40 @@
+<html>
+	<head>
+		{% block head %}
+		{% endblock %}
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+		<style>
+    body {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+    @media (min-width: 768px) {
+      .container {
+        max-width: 730px;
+      }
+    }
+    .container-narrow > hr {
+      margin: 30px 0;
+    }
+    form{
+      max-width: 330px;
+      padding: 15px;
+      margin: 0 auto;
+    }
+		</style>
+	</head>
+	<body>
+		<div id="content">
+			{% block content %}
+			{% endblock %}
+		</div>
+		<div id="scripts">
+			<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>			
+		</div>
+</body>
+</html>

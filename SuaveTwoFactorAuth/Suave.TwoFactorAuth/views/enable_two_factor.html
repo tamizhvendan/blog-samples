@@ -1,0 +1,35 @@
+{% extends "page.html" %}
+
+{% block head %}
+  <title> Enable Two Factor Authentication </title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+        <p>Scan the QR Code with Google Authenticator and 
+            enter the 6 digit code it generates</p>      
+        {% if model.Err != "" %}
+            <p class="alert alert-danger">{{model.Err}}</p>
+        {% endif %}  
+        <form action="/enable_two_factor" method="POST" class="form-horizontal" role="form"> 
+          <input type="hidden" name="SecretKey" value="{{model.Key}}">
+          <div class="form-group">           
+            <div class="col-md-10">
+              <input type="text" name="Code" class="form-control" value="">
+            </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" class="btn btn-default" value="Enable" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <img src="{{model.Url}}"/>
+    </div>
+  </div>
+</div>
+{% endblock %}

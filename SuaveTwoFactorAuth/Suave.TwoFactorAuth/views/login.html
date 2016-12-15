@@ -1,0 +1,20 @@
+{% extends "page.html" %}
+
+{% block head %}
+  <title> Login </title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  {% if model != "" %}
+      <p class="alert alert-danger">{{model}}</p>
+  {% endif %}
+  <form method="POST" action="/login">    
+    <label for="Username" class="sr-only">Username</label>
+    <input type="text" id="Username" name="Username" class="form-control" placeholder="Username" required>
+    <label for="Password" class="sr-only">Password</label>
+    <input type="password" id="Password" name="Password" class="form-control" placeholder="Password" required>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+  </form>
+</div>
+{% endblock %}
