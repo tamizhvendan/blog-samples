@@ -1,21 +1,17 @@
+{% extends "page.html" %}
+
 {% block head %}
   <title> Enable Two Factor Authentication </title>
 {% endblock %}
 
 {% block content %}
-<form action="/verify_auth_code" method="POST" class="form-horizontal" role="form"> 
-  <div class="form-group">
-    <label for="code" class="col-md-2 control-label">
-      Enter OTP from Google Authenticator
-    </label>
-    <div class="col-md-10">
-      <input type="text" name="Code" class="form-control" value="">
-    </div>
-    </div>
+<div class="container">
+  <form action="/verify_auth_code" method="POST" role="form"> 
     <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Login" />
-        </div>
+      <label for="Code">Verification Code</label>
+      <input type="text" name="Code" id="Code" class="form-control" value="">
     </div>
-</form>
+    <button type="submit" class="btn btn-primary btn-block">Login</button>
+  </form>
+</div>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "page.html" %}
 
 {% block head %}
-  <title> Login </title>
+  <title> {{model.Username}}'s Profile </title>
 {% endblock %}
 
 {% block content %}
@@ -9,11 +9,11 @@
   <h2>Hi {{model.Username}}</h2>
   <div>
     {% if model.is_two_factor_auth_enabled %}
-      Don't want more security? <a href="/disable_two_factor">Disable Two Factor Authentication</a>
+      <a href="/disable_two_factor" class="btn btn-warning">Disable Two Factor Authentication</a>
     {% else %}
-      Add more security! <a href="/enable_two_factor">Enable Two Factor Authentication</a>
+      <a href="/enable_two_factor" class="btn btn-success">Enable Two Factor Authentication</a>
     {% endif %}
+    <a href="/logout" class="btn btn-default" role="button">logout</a>
   </div>
-  <p><a href="/logout">logout</a></p>
 </div>
 {% endblock %}
