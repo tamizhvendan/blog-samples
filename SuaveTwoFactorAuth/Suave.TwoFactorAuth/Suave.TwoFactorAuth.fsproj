@@ -43,6 +43,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auth.fs" />
+    <Compile Include="Combinators.fs" />
+    <Compile Include="Login.fs" />
+    <Compile Include="GoogleAuthenticator.fs" />
+    <Compile Include="Profile.fs" />
     <Compile Include="Web.fs" />
     <Compile Include="Suave.TwoFactorAuth.fs" />
     <None Include="App.config" />
@@ -51,22 +55,22 @@
     <Folder Include="views\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="views\page.html">
+    <None Include="views\page.liquid">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="views\profile.html">
+    <None Include="views\profile.liquid">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="views\login.html">
+    <None Include="views\login.liquid">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="views\not_found.html">
+    <None Include="views\not_found.liquid">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="views\enable_two_factor.html">
+    <None Include="views\enable_two_factor.liquid">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="views\auth_code.html">
+    <None Include="views\auth_code.liquid">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
