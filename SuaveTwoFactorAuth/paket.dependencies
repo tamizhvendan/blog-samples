@@ -3,4 +3,3 @@ nuget FSharp.Core
 nuget OtpSharp
 nuget Suave
 nuget Suave.DotLiquid
-github ptrelford/FsHtml src/FsHtml.fs
