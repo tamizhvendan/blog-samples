@@ -20,7 +20,7 @@ let sessionGet failureF key successF =
                 match HttpContext.state ctx with
                 | Some store -> 
                   match store.get key with
-                  | Some username -> successF username
+                  | Some value -> successF value
                   | _ -> failureF
                 | _ -> failureF
   )

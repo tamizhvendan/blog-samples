@@ -5,7 +5,7 @@ open Suave.Redirection
 open Suave.Filters
 open Suave.Operators
 
-open Auth
+open User
 open Login
 let profilePath = "/profile"
 
@@ -32,6 +32,7 @@ let renderProfile notFoundPath username =
     user    
     |> ProfileViewModel.FromUser
     |> page "profile.liquid"
-  | _ -> redirect notFoundPath
+  | _ -> FOUND notFoundPath
 
-let profileWebPart notFoundPath = path profilePath >=> secured (renderProfile notFoundPath)
+let profileWebPart notFoundPath = 
+  path profilePath >=> secured (renderProfile notFoundPath)

@@ -10,7 +10,7 @@ open Suave.DotLiquid
 open Suave.Filters
 
 open Combinators
-open Auth
+open User
 
 let loginPath = "/login"
 let userSessionKey = "loggedUser"
@@ -22,22 +22,21 @@ let redirectToLogin = function
 let loginSucess failureW redirectPath username =
   authenticated Cookie.CookieLife.Session false      
     >=> sessionSet failureW userSessionKey username
-    >=> Redirection.FOUND redirectPath
+    >=> FOUND redirectPath
 
-let onLogin authCodePath ctx = async {
-  match ctx.request.["Username"], ctx.request.["Password"] with
+let onLogin redirectPath authCodePath (request : HttpRequest) = 
+  match request.["Username"], request.["Password"] with
   | Some username, Some password -> 
     match getUser username with
     | Some user -> 
       match user.Password = password, user.TwoFactorAuthentication with
-      | true, Disabled -> return! loginSucess never "/profile" username ctx
+      | true, Disabled -> loginSucess never redirectPath username
       | true, Enabled _ -> 
-        return! (sessionSet never authCodeSessionKey username  
-                  >=> FOUND authCodePath) ctx
-      | _ -> return! redirectToLogin (Some "Password didn't match") ctx
-    | _ -> return! redirectToLogin (Some "Invalid username") ctx   
-  | _ -> return! redirectToLogin (Some "Invalid request") ctx
-}
+          sessionSet never authCodeSessionKey username  
+            >=> FOUND authCodePath
+      | _ -> redirectToLogin (Some "Password didn't match")
+    | _ -> redirectToLogin (Some "Invalid username")   
+  | _ -> redirectToLogin (Some "Invalid request")
 
 let renderLoginView (request : HttpRequest) =
   let errMsg =
@@ -50,7 +49,7 @@ let secured webpart =
   let onFail = redirectToLogin (Some "sign-in to access")
   sessionGet onFail userSessionKey webpart
   
-let loginWebPart authCodePath =
+let loginWebPart redirectPath authCodePath =
   path loginPath >=> choose [
       GET >=> request renderLoginView
-      POST >=> onLogin authCodePath]
+      POST >=> request (onLogin redirectPath authCodePath)]

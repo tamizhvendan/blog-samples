@@ -13,7 +13,7 @@ let notFoundPath = "/notfound"
 
 let app =   
   choose [
-    loginWebPart authCodePath
+    loginWebPart profilePath authCodePath
     googleAuthenticatorWebPart profilePath notFoundPath
     profileWebPart notFoundPath
     path "/logout" >=> clearSession >=> redirectToLogin None

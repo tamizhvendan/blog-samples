@@ -1,7 +1,7 @@
-module Suave.TwoFactorAuth.Auth
+module Suave.TwoFactorAuth.User
 
-open OtpSharp
 open System.Collections.Generic
+
 
 type TwoFactorAuthentication =
 | Enabled of SecretKey:string
@@ -13,14 +13,13 @@ type User = {
   TwoFactorAuthentication : TwoFactorAuthentication
 }
 
-let users = new Dictionary<string, User>()
+let private users = new Dictionary<string, User>()
 users.Add("foo", {Username = "foo"; Password = "bar"; TwoFactorAuthentication = Disabled})
-users.Add("bar", {Username = "bar"; Password = "foo"; TwoFactorAuthentication = Disabled})
 let getUser username = 
   match users.TryGetValue username with
   | true, user -> Some user
   | _ -> None
-let updateUserTwoFactorAuth username key =
+let enableTwoFactorAuth username key =
   match getUser username with
   | Some user ->
     users.[username] <- {user with TwoFactorAuthentication = Enabled key}
@@ -31,3 +30,4 @@ let disableTwoFactorAuth username =
   | Some user ->
     users.[username] <- {user with TwoFactorAuthentication = Disabled}
   | _ -> ()
+
